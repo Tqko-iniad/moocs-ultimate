@@ -1,0 +1,1617 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MOOCs Ultimate Settings</title>
+    <script type="module" src="./options.js"></script>
+    <style>
+      :root {
+        color: #1f2933;
+        background:
+          radial-gradient(circle at 12% 8%, rgba(255, 255, 255, 0.92), transparent 30%),
+          linear-gradient(135deg, #f6f7f9 0%, #eef1f5 54%, #f9fafb 100%);
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+      }
+
+      .um-options-shell {
+        box-sizing: border-box;
+        max-width: 1220px;
+        margin: 0 auto;
+        padding: 12px 18px 40px;
+      }
+
+      .um-options-header {
+        display: grid;
+        grid-template-columns: 240px minmax(0, 1fr);
+        align-items: center;
+        gap: 18px;
+        min-height: 52px;
+        margin-bottom: 12px;
+      }
+
+      .um-options-header::before {
+        content: "";
+      }
+
+      .um-options-header > div:first-child {
+        grid-column: 2;
+      }
+
+      .um-options-header .um-actions {
+        grid-column: 2;
+        grid-row: 1;
+        justify-self: end;
+      }
+
+      .um-eyebrow {
+        margin: 0 0 4px;
+        color: #6b7280;
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 0;
+      }
+
+      h1 {
+        margin: 0;
+        color: #323232;
+        font-size: 24px;
+        font-weight: 760;
+      }
+
+      h2 {
+        margin: 0 0 14px;
+        font-size: 18px;
+      }
+
+      .um-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+
+      .um-top-tabs {
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        gap: 4px;
+        width: max-content;
+        margin: 0 0 12px 258px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.72);
+        box-shadow:
+          inset 0 0 0 1px rgba(148, 163, 184, 0.18),
+          0 10px 26px rgba(15, 23, 42, 0.06);
+        padding: 5px;
+      }
+
+      .um-top-tabs {
+      }
+
+      .um-top-tabs button[aria-selected="true"] {
+        border-color: transparent;
+        background: #ffffff;
+        color: #111827;
+        box-shadow: 0 5px 16px rgba(15, 23, 42, 0.12);
+      }
+
+      button,
+      .um-file-button,
+      .um-link-button {
+        min-height: 36px;
+        border: 1px solid rgba(148, 163, 184, 0.34);
+        border-radius: 10px;
+        background: rgba(255, 255, 255, 0.82);
+        color: #1f2937;
+        cursor: pointer;
+        font: inherit;
+        font-size: 13px;
+        font-weight: 680;
+        padding: 7px 12px;
+      }
+
+      .um-link-button {
+        box-sizing: border-box;
+        display: inline-flex;
+        align-items: center;
+        text-decoration: none;
+      }
+
+      button.primary {
+        border-color: #007aff;
+        background: #007aff;
+        color: #ffffff;
+      }
+
+      button.primary.dirty {
+        border-color: #f59e0b;
+        background: #f59e0b;
+        box-shadow: 0 8px 22px rgba(245, 158, 11, 0.28);
+      }
+
+      .um-file-button input {
+        display: none;
+      }
+
+      .um-status {
+        position: sticky;
+        top: 0;
+        z-index: 2;
+        min-height: 22px;
+        margin: 0 0 12px 258px;
+        border: 1px solid rgba(148, 163, 184, 0.2);
+        border-radius: 13px;
+        background: rgba(255, 255, 255, 0.76);
+        color: #5b6472;
+        box-shadow: 0 10px 30px rgba(15, 23, 42, 0.05);
+        padding: 9px 12px;
+        white-space: pre-wrap;
+        backdrop-filter: blur(18px) saturate(140%);
+        -webkit-backdrop-filter: blur(18px) saturate(140%);
+      }
+
+      .um-status.error {
+        border-color: #fecaca;
+        background: #fff1f2;
+        color: #b91c1c;
+      }
+
+      .um-status.dirty {
+        border-color: #fed7aa;
+        background: #fff7ed;
+        color: #9a3412;
+      }
+
+      .um-options-layout {
+        display: grid;
+        grid-template-columns: 240px minmax(0, 1fr);
+        gap: 18px;
+        align-items: start;
+      }
+
+      .um-side-nav {
+        position: fixed;
+        top: 12px;
+        left: max(18px, calc((100vw - 1220px) / 2 + 18px));
+        display: grid;
+        gap: 7px;
+        width: 240px;
+        min-height: calc(100vh - 24px);
+        box-sizing: border-box;
+        border: 1px solid rgba(255, 255, 255, 0.72);
+        border-radius: 24px;
+        background: rgba(246, 247, 249, 0.72);
+        box-shadow:
+          inset -1px 0 0 rgba(255, 255, 255, 0.86),
+          0 22px 56px rgba(15, 23, 42, 0.08);
+        padding: 58px 12px 16px;
+        backdrop-filter: blur(28px) saturate(145%);
+        -webkit-backdrop-filter: blur(28px) saturate(145%);
+      }
+
+      .um-settings-stack {
+        grid-column: 2;
+      }
+
+      .um-window-controls {
+        position: absolute;
+        top: 22px;
+        left: 18px;
+        display: flex;
+        gap: 12px;
+        align-items: center;
+        width: auto;
+        height: 14px;
+      }
+
+      .um-side-nav .um-window-control {
+        display: block;
+        width: 14px;
+        min-width: 14px;
+        height: 14px;
+        min-height: 14px;
+        border: 0;
+        border-radius: 999px;
+        box-shadow:
+          inset 0 0 0 1px rgba(15, 23, 42, 0.1),
+          0 1px 2px rgba(15, 23, 42, 0.12);
+        padding: 0;
+      }
+
+      .um-side-nav .um-window-control:hover,
+      .um-side-nav .um-window-control:focus-visible {
+        filter: brightness(0.96) saturate(118%);
+        outline: 2px solid rgba(0, 122, 255, 0.28);
+        outline-offset: 2px;
+      }
+
+      .um-side-nav .um-window-close {
+        background: #ff5f57;
+      }
+
+      .um-side-nav .um-window-minimize {
+        background: #ffbd2e;
+      }
+
+      .um-side-nav .um-window-save {
+        background: #28c840;
+      }
+
+      .um-side-nav button {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        justify-content: flex-start;
+        width: 100%;
+        min-height: 46px;
+        border: 0;
+        border-radius: 13px;
+        background: transparent;
+        color: #111827;
+        padding: 7px 11px;
+        text-align: left;
+      }
+
+      .um-side-nav button:hover,
+      .um-side-nav button:focus-visible {
+        background: rgba(255, 255, 255, 0.66);
+        outline: none;
+      }
+
+      .um-side-nav button[aria-current="true"] {
+        background: #007aff;
+        color: #ffffff;
+        box-shadow: 0 8px 20px rgba(0, 122, 255, 0.28);
+      }
+
+      .um-nav-icon {
+        display: inline-grid;
+        place-items: center;
+        flex: 0 0 auto;
+        width: 29px;
+        height: 29px;
+        border-radius: 8px;
+        background: linear-gradient(180deg, #60a5fa 0%, #0ea5e9 100%);
+        color: #ffffff;
+        box-shadow:
+          inset 0 1px 0 rgba(255, 255, 255, 0.42),
+          0 2px 7px rgba(15, 23, 42, 0.24);
+      }
+
+      .um-nav-icon svg {
+        width: 18px;
+        height: 18px;
+        fill: none;
+        stroke: currentColor;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+        stroke-width: 2.15;
+      }
+
+      .um-side-nav button[aria-current="true"] .um-nav-icon {
+        background: rgba(255, 255, 255, 0.22);
+        color: #ffffff;
+        box-shadow:
+          inset 0 1px 0 rgba(255, 255, 255, 0.28),
+          0 2px 8px rgba(15, 23, 42, 0.18);
+      }
+
+      .um-side-nav button[data-accent="purple"] .um-nav-icon {
+        background: linear-gradient(180deg, #c084fc 0%, #7c3aed 100%);
+      }
+
+      .um-side-nav button[data-accent="green"] .um-nav-icon {
+        background: linear-gradient(180deg, #4ade80 0%, #16a34a 100%);
+      }
+
+      .um-side-nav button[data-accent="cyan"] .um-nav-icon {
+        background: linear-gradient(180deg, #67e8f9 0%, #0891b2 100%);
+      }
+
+      .um-side-nav button[data-accent="orange"] .um-nav-icon {
+        background: linear-gradient(180deg, #fdba74 0%, #ea580c 100%);
+      }
+
+      .um-side-nav button[data-accent="yellow"] .um-nav-icon {
+        background: linear-gradient(180deg, #fde047 0%, #d97706 100%);
+      }
+
+      .um-side-nav button[data-accent="indigo"] .um-nav-icon {
+        background: linear-gradient(180deg, #818cf8 0%, #4f46e5 100%);
+      }
+
+      .um-side-nav button[data-accent="teal"] .um-nav-icon {
+        background: linear-gradient(180deg, #5eead4 0%, #0d9488 100%);
+      }
+
+      .um-side-nav button[data-accent="pink"] .um-nav-icon {
+        background: linear-gradient(180deg, #f9a8d4 0%, #db2777 100%);
+      }
+
+      .um-side-nav button[data-accent="red"] .um-nav-icon {
+        background: linear-gradient(180deg, #f87171 0%, #dc2626 100%);
+      }
+
+      .um-side-nav button[data-accent="gray"] .um-nav-icon {
+        background: linear-gradient(180deg, #9ca3af 0%, #374151 100%);
+      }
+
+      .um-nav-label {
+        overflow: hidden;
+        font-size: 14.5px;
+        font-weight: 720;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .um-panel {
+        border: 0;
+        border-radius: 24px;
+        background: rgba(255, 255, 255, 0.72);
+        box-shadow:
+          inset 0 0 0 1px rgba(148, 163, 184, 0.13),
+          0 22px 52px rgba(15, 23, 42, 0.08);
+        padding: 22px;
+        backdrop-filter: blur(22px) saturate(140%);
+        -webkit-backdrop-filter: blur(22px) saturate(140%);
+      }
+
+      .um-settings-stack {
+        display: grid;
+        gap: 14px;
+      }
+
+      .um-panel[hidden],
+      .um-view[hidden] {
+        display: none;
+      }
+
+      .um-section-description,
+      .um-field-description {
+        margin: 0;
+        color: #64748b;
+        font-size: 12px;
+        line-height: 1.5;
+      }
+
+      .um-section-description {
+        margin: -8px 0 12px;
+      }
+
+      .um-basic-overview {
+        display: grid;
+        gap: 14px;
+        margin: 12px 0 16px;
+      }
+
+      .um-status-grid {
+        display: grid;
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+        gap: 10px;
+      }
+
+      .um-status-card {
+        display: grid;
+        gap: 7px;
+        min-height: 94px;
+        box-sizing: border-box;
+        border: 1px solid rgba(148, 163, 184, 0.14);
+        border-radius: 16px;
+        background: rgba(244, 246, 248, 0.82);
+        padding: 12px;
+      }
+
+      .um-status-card strong {
+        color: #172033;
+        font-size: 14px;
+      }
+
+      .um-status-card small {
+        color: #64748b;
+        font-size: 11px;
+        line-height: 1.45;
+      }
+
+      .um-status-pill {
+        justify-self: start;
+        min-width: 48px;
+        border-radius: 999px;
+        background: #e2e8f0;
+        color: #475569;
+        font-size: 11px;
+        font-weight: 800;
+        line-height: 1;
+        padding: 5px 8px;
+        text-align: center;
+      }
+
+      .um-status-card[data-state="on"] {
+        border-color: #bfdbfe;
+        background: #eff6ff;
+      }
+
+      .um-status-card[data-state="on"] .um-status-pill {
+        background: #2563eb;
+        color: #ffffff;
+      }
+
+      .um-status-card[data-state="partial"] {
+        border-color: #fed7aa;
+        background: #fff7ed;
+      }
+
+      .um-status-card[data-state="partial"] .um-status-pill {
+        background: #f59e0b;
+        color: #ffffff;
+      }
+
+      .um-quick-presets {
+        display: grid;
+        gap: 10px;
+        border: 1px solid rgba(148, 163, 184, 0.12);
+        border-radius: 18px;
+        background: rgba(244, 246, 248, 0.76);
+        padding: 12px;
+      }
+
+      .um-quick-heading {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 12px;
+      }
+
+      .um-quick-heading strong {
+        color: #1e3a8a;
+        font-size: 14px;
+      }
+
+      .um-quick-heading span {
+        color: #64748b;
+        font-size: 12px;
+      }
+
+      .um-preset-list {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 8px;
+      }
+
+      .um-preset-button {
+        display: grid;
+        gap: 4px;
+        min-height: 72px;
+        border-color: rgba(148, 163, 184, 0.18);
+        border-radius: 14px;
+        background: rgba(255, 255, 255, 0.8);
+        text-align: left;
+      }
+
+      .um-preset-button strong {
+        color: #1d4ed8;
+        font-size: 13px;
+      }
+
+      .um-preset-button span {
+        color: #64748b;
+        font-size: 11px;
+        font-weight: 500;
+        line-height: 1.45;
+      }
+
+      .um-preset-button:hover,
+      .um-preset-button:focus-visible {
+        border-color: #2563eb;
+        box-shadow: 0 8px 22px rgba(37, 99, 235, 0.12);
+      }
+
+      .um-field {
+        display: grid;
+        grid-template-columns: minmax(220px, 0.9fr) minmax(0, 1.1fr);
+        align-items: start;
+        gap: 10px;
+        min-height: 38px;
+        border-top: 1px solid rgba(148, 163, 184, 0.16);
+        padding: 13px 0;
+      }
+
+      .um-field:first-of-type {
+        border-top: 0;
+      }
+
+      .um-field-label {
+        display: grid;
+        gap: 3px;
+      }
+
+      .um-field-label span {
+        color: #334155;
+        font-size: 13px;
+        font-weight: 650;
+      }
+
+      .um-field input,
+      .um-field select {
+        box-sizing: border-box;
+        width: 100%;
+        min-width: 0;
+        border: 1px solid rgba(148, 163, 184, 0.28);
+        border-radius: 10px;
+        background: rgba(255, 255, 255, 0.86);
+        color: #111827;
+        font: inherit;
+        font-size: 14px;
+        padding: 7px 9px;
+      }
+
+      .um-field input[type="checkbox"] {
+        position: relative;
+        width: 48px;
+        height: 28px;
+        appearance: none;
+        justify-self: end;
+        border: 1px solid #cbd5e1;
+        border-radius: 999px;
+        background: #d8dce2;
+        cursor: pointer;
+        transition:
+          background-color 0.16s ease,
+          border-color 0.16s ease;
+      }
+
+      .um-field input[type="checkbox"]::after {
+        position: absolute;
+        top: 3px;
+        left: 3px;
+        width: 20px;
+        height: 20px;
+        border-radius: 999px;
+        background: #ffffff;
+        box-shadow: 0 2px 8px rgba(15, 23, 42, 0.18);
+        content: "";
+        transition: transform 0.16s ease;
+      }
+
+      .um-field input[type="checkbox"]:checked {
+        border-color: #007aff;
+        background: #007aff;
+      }
+
+      .um-field input[type="checkbox"]:checked::after {
+        transform: translateX(20px);
+      }
+
+      .um-field input[type="checkbox"]:focus-visible {
+        outline: 3px solid rgba(37, 99, 235, 0.24);
+        outline-offset: 2px;
+      }
+
+      .um-field input[type="text"][data-setting-path="appearance.backgroundImageUrl"],
+      .um-field input[type="text"][data-setting-path="downloads.downloadFolderPattern"] {
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      }
+
+      .um-field[data-setting-path="appearance.backgroundImageUrl"],
+      .um-field[data-setting-path="downloads.downloadFolderPattern"] {
+        grid-template-columns: 1fr;
+      }
+
+      .um-field[data-setting-path="appearance.backgroundImageUrl"] input,
+      .um-field[data-setting-path="downloads.downloadFolderPattern"] input {
+        min-height: 42px;
+      }
+
+      .um-field input[type="range"] {
+        accent-color: #2563eb;
+        padding: 0;
+      }
+
+      .um-field select {
+        cursor: pointer;
+      }
+
+      .um-field input:disabled,
+      .um-field select:disabled {
+        cursor: not-allowed;
+        opacity: 0.58;
+      }
+
+      .um-field-control {
+        display: grid;
+        align-items: center;
+        min-height: 36px;
+      }
+
+      .um-field-control[data-type="checkbox"] {
+        justify-self: start;
+        width: 100%;
+        justify-content: end;
+      }
+
+      .um-field input[type="color"] {
+        height: 36px;
+        padding: 3px;
+      }
+
+      .um-backup-panel {
+        margin-top: 14px;
+      }
+
+      .um-memo-toolbar {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-bottom: 12px;
+      }
+
+      .um-memo-toolbar input[type="search"] {
+        flex: 1 1 260px;
+        min-height: 36px;
+        border: 1px solid #cbd5e1;
+        border-radius: 8px;
+        font: inherit;
+        padding: 7px 10px;
+      }
+
+      .um-memo-toolbar select {
+        min-height: 36px;
+        border: 1px solid #cbd5e1;
+        border-radius: 8px;
+        background: rgba(255, 255, 255, 0.86);
+        color: #1f2937;
+        font: inherit;
+        font-size: 13px;
+        font-weight: 680;
+        padding: 7px 10px;
+      }
+
+      .um-memo-results {
+        display: grid;
+        gap: 10px;
+      }
+
+      .um-assignment-tabs {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin: 12px 0 0;
+      }
+
+      .um-assignment-tabs[hidden] {
+        display: none;
+      }
+
+      .um-assignment-tabs button {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        min-height: 34px;
+        border: 1px solid rgba(148, 163, 184, 0.28);
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.68);
+        color: #334155;
+        padding: 6px 12px;
+        font-size: 13px;
+        font-weight: 780;
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.65);
+      }
+
+      .um-assignment-tabs button[aria-selected="true"] {
+        border-color: rgba(0, 122, 255, 0.38);
+        background: #007aff;
+        color: #ffffff;
+        box-shadow: 0 8px 18px rgba(0, 122, 255, 0.2);
+      }
+
+      .um-assignment-tab-count {
+        display: inline-grid;
+        min-width: 22px;
+        height: 22px;
+        place-items: center;
+        border-radius: 999px;
+        background: rgba(15, 23, 42, 0.08);
+        padding: 0 7px;
+        font-size: 11px;
+        font-weight: 850;
+      }
+
+      .um-assignment-tabs button[aria-selected="true"] .um-assignment-tab-count {
+        background: rgba(255, 255, 255, 0.22);
+      }
+
+      .um-assignment-quick-filters {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin: 12px 0 0;
+        padding: 10px;
+        border: 1px solid rgba(148, 163, 184, 0.14);
+        border-radius: 14px;
+        background: rgba(248, 250, 252, 0.7);
+      }
+
+      .um-assignment-quick-filters button {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        min-height: 34px;
+        border-radius: 999px;
+        font-size: 13px;
+        font-weight: 820;
+      }
+
+      .um-assignment-quick-filters button[data-tone="danger"] {
+        border-color: rgba(245, 158, 11, 0.36);
+        background: #fffbeb;
+        color: #92400e;
+      }
+
+      .um-assignment-quick-filters button[data-tone="warning"] {
+        border-color: rgba(14, 165, 233, 0.28);
+        background: #f0f9ff;
+        color: #075985;
+      }
+
+      .um-assignment-quick-filters button[data-tone="muted"] {
+        border-color: rgba(139, 92, 246, 0.24);
+        background: #f5f3ff;
+        color: #5b21b6;
+      }
+
+      .um-assignment-quick-filters button[data-tone="complete"] {
+        border-color: rgba(34, 197, 94, 0.28);
+        background: #f0fdf4;
+        color: #166534;
+      }
+
+      .um-assignment-quick-filters button[aria-selected="true"] {
+        border-color: rgba(0, 122, 255, 0.44);
+        background: #007aff;
+        color: #ffffff;
+        box-shadow: 0 8px 18px rgba(0, 122, 255, 0.18);
+      }
+
+      .um-assignment-quick-filters button[aria-selected="true"] .um-assignment-tab-count {
+        background: rgba(255, 255, 255, 0.22);
+      }
+
+      .um-memo-card {
+        border: 1px solid rgba(148, 163, 184, 0.16);
+        border-radius: 16px;
+        background: rgba(255, 255, 255, 0.72);
+        padding: 12px;
+      }
+
+      .um-memo-card h3 {
+        margin: 0 0 4px;
+        font-size: 15px;
+      }
+
+      .um-memo-card p {
+        margin: 4px 0;
+        color: #475569;
+        font-size: 13px;
+      }
+
+      .um-memo-card ul {
+        margin: 8px 0 0;
+        padding-left: 18px;
+      }
+
+      .um-memo-card li {
+        margin: 5px 0;
+        white-space: pre-wrap;
+      }
+
+      .um-assignment-card {
+        position: relative;
+        display: grid;
+        gap: 10px;
+        overflow: hidden;
+        padding-left: 16px;
+      }
+
+      .um-assignment-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        width: 5px;
+        background: #cbd5e1;
+      }
+
+      .um-assignment-card[data-status="submitted"]::before {
+        background: #22c55e;
+      }
+
+      .um-assignment-card[data-status="pending_confirmation"]::before,
+      .um-assignment-card[data-status="unchecked"]::before {
+        background: #0ea5e9;
+      }
+
+      .um-assignment-card[data-status="not_submitted"]::before {
+        background: #f59e0b;
+      }
+
+      .um-assignment-card[data-status="unpublished"]::before {
+        background: #8b5cf6;
+      }
+
+      .um-assignment-card[data-status="unknown"]::before {
+        background: #94a3b8;
+      }
+
+      .um-assignment-course-folder {
+        display: grid;
+        gap: 10px;
+        border: 1px solid rgba(148, 163, 184, 0.18);
+        border-radius: 18px;
+        background: rgba(255, 255, 255, 0.58);
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.72);
+        padding: 12px;
+      }
+
+      .um-assignment-folder-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 2px 2px 4px;
+      }
+
+      .um-assignment-folder-header h3 {
+        overflow: hidden;
+        margin: 0;
+        color: #1f2937;
+        font-size: 16px;
+        font-weight: 820;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .um-assignment-lecture-folder {
+        overflow: hidden;
+        border: 1px solid rgba(148, 163, 184, 0.16);
+        border-radius: 14px;
+        background: rgba(248, 250, 252, 0.74);
+      }
+
+      .um-assignment-lecture-folder[data-state="danger"] {
+        border-color: rgba(245, 158, 11, 0.42);
+        background: rgba(255, 251, 235, 0.82);
+      }
+
+      .um-assignment-lecture-folder[data-state="warning"] {
+        border-color: rgba(14, 165, 233, 0.34);
+        background: rgba(240, 249, 255, 0.82);
+      }
+
+      .um-assignment-lecture-folder[data-state="complete"] {
+        border-color: rgba(34, 197, 94, 0.28);
+        background: rgba(240, 253, 244, 0.78);
+      }
+
+      .um-assignment-lecture-folder[data-state="unknown"] {
+        border-color: rgba(100, 116, 139, 0.28);
+      }
+
+      .um-assignment-lecture-folder[data-state="muted"] {
+        border-color: rgba(139, 92, 246, 0.24);
+        background: rgba(245, 243, 255, 0.62);
+      }
+
+      .um-assignment-lecture-folder summary {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        min-height: 40px;
+        cursor: pointer;
+        list-style: none;
+        padding: 10px 12px;
+      }
+
+      .um-assignment-lecture-folder summary::-webkit-details-marker {
+        display: none;
+      }
+
+      .um-assignment-lecture-folder summary::before {
+        content: "▾";
+        flex: 0 0 auto;
+        color: #64748b;
+        font-size: 12px;
+        font-weight: 900;
+        transform: rotate(-90deg);
+        transition: transform 120ms ease;
+      }
+
+      .um-assignment-lecture-folder[open] summary::before {
+        transform: rotate(0deg);
+      }
+
+      .um-assignment-lecture-title {
+        flex: 1 1 auto;
+        min-width: 80px;
+        color: #111827;
+        font-size: 15px;
+        font-weight: 820;
+      }
+
+      .um-assignment-folder-state {
+        flex: 0 0 auto;
+        border-radius: 999px;
+        background: #e2e8f0;
+        color: #475569;
+        font-size: 11px;
+        font-weight: 860;
+        line-height: 1;
+        padding: 6px 9px;
+      }
+
+      .um-assignment-folder-state[data-state="danger"] {
+        background: #fef3c7;
+        color: #92400e;
+      }
+
+      .um-assignment-folder-state[data-state="warning"] {
+        background: #e0f2fe;
+        color: #075985;
+      }
+
+      .um-assignment-folder-state[data-state="complete"] {
+        background: #dcfce7;
+        color: #166534;
+      }
+
+      .um-assignment-folder-state[data-state="muted"] {
+        background: #ede9fe;
+        color: #5b21b6;
+      }
+
+      .um-assignment-task-list {
+        display: grid;
+        gap: 8px;
+        border-top: 1px solid rgba(148, 163, 184, 0.14);
+        padding: 10px;
+      }
+
+      .um-assignment-card-header {
+        display: flex;
+        align-items: start;
+        justify-content: space-between;
+        gap: 12px;
+      }
+
+      .um-assignment-card .um-actions {
+        display: flex;
+        flex: 0 0 auto;
+        flex-wrap: wrap;
+        align-items: end;
+        justify-content: flex-end;
+        gap: 8px;
+      }
+
+      .um-assignment-status-control {
+        display: grid;
+        gap: 4px;
+        min-width: 166px;
+      }
+
+      .um-assignment-status-control span {
+        color: #64748b;
+        font-size: 11px;
+        font-weight: 760;
+        line-height: 1;
+      }
+
+      .um-assignment-status-control select {
+        box-sizing: border-box;
+        width: 100%;
+        min-height: 36px;
+        border: 1px solid rgba(148, 163, 184, 0.34);
+        border-radius: 10px;
+        background: rgba(255, 255, 255, 0.9);
+        color: #111827;
+        font: inherit;
+        font-size: 13px;
+        font-weight: 700;
+        padding: 6px 10px;
+      }
+
+      .um-assignment-deadline-editor {
+        border: 1px solid rgba(148, 163, 184, 0.22);
+        border-radius: 10px;
+        background: rgba(248, 250, 252, 0.76);
+      }
+
+      .um-assignment-deadline-editor summary {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        min-height: 38px;
+        cursor: pointer;
+        list-style: none;
+        padding: 8px 11px;
+      }
+
+      .um-assignment-deadline-editor summary::-webkit-details-marker {
+        display: none;
+      }
+
+      .um-assignment-deadline-editor summary span {
+        color: #64748b;
+        font-size: 11px;
+        font-weight: 780;
+      }
+
+      .um-assignment-deadline-editor summary strong {
+        color: #334155;
+        font-size: 12px;
+      }
+
+      .um-assignment-deadline-editor[data-tone="overdue"] {
+        border-color: rgba(239, 68, 68, 0.32);
+        background: rgba(254, 242, 242, 0.82);
+      }
+
+      .um-assignment-deadline-editor[data-tone="today"],
+      .um-assignment-deadline-editor[data-tone="soon"] {
+        border-color: rgba(245, 158, 11, 0.32);
+        background: rgba(255, 251, 235, 0.86);
+      }
+
+      .um-assignment-deadline-fields {
+        display: grid;
+        grid-template-columns: minmax(150px, 1fr) minmax(130px, 0.8fr) auto;
+        align-items: end;
+        gap: 9px;
+        border-top: 1px solid rgba(148, 163, 184, 0.16);
+        padding: 10px;
+      }
+
+      .um-assignment-deadline-fields label {
+        display: grid;
+        gap: 4px;
+        color: #64748b;
+        font-size: 11px;
+        font-weight: 760;
+      }
+
+      .um-assignment-deadline-fields input {
+        box-sizing: border-box;
+        width: 100%;
+        min-height: 36px;
+        border: 1px solid rgba(148, 163, 184, 0.34);
+        border-radius: 9px;
+        background: rgba(255, 255, 255, 0.94);
+        color: #111827;
+        font: inherit;
+        font-size: 13px;
+        font-weight: 700;
+        padding: 6px 9px;
+      }
+
+      .um-assignment-date-picker-row {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        gap: 7px;
+      }
+
+      .um-assignment-date-picker-row > input[type="date"]::-webkit-calendar-picker-indicator {
+        width: 0;
+        margin: 0;
+        opacity: 0;
+        pointer-events: none;
+      }
+
+      .um-assignment-calendar-trigger {
+        position: relative;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 36px;
+        border: 1px solid rgba(59, 130, 246, 0.28);
+        border-radius: 9px;
+        background: #eff6ff;
+        color: #1d4ed8;
+        cursor: pointer;
+        font: inherit;
+        font-size: 12px;
+        font-weight: 800;
+        padding: 6px 10px;
+        white-space: nowrap;
+      }
+
+      .um-assignment-calendar-trigger > input[type="date"] {
+        position: absolute;
+        inset: 0;
+        z-index: 1;
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        border: 0;
+        opacity: 0;
+        cursor: pointer;
+      }
+
+      .um-assignment-calendar-trigger > input[type="date"]::-webkit-calendar-picker-indicator {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        cursor: pointer;
+      }
+
+      .um-assignment-deadline-buttons {
+        display: flex;
+        gap: 7px;
+      }
+
+      .um-assignment-deadline-buttons button {
+        min-height: 36px;
+        white-space: nowrap;
+      }
+
+      .um-assignment-deadline-buttons button:disabled {
+        cursor: default;
+        opacity: 0.45;
+      }
+
+      .um-assignment-deadline-pill[data-tone="overdue"] {
+        background: #fee2e2;
+        color: #991b1b;
+      }
+
+      .um-assignment-deadline-pill[data-tone="today"],
+      .um-assignment-deadline-pill[data-tone="soon"] {
+        background: #fef3c7;
+        color: #92400e;
+      }
+
+      .um-assignment-deadline-pill[data-tone="scheduled"] {
+        background: #dbeafe;
+        color: #1d4ed8;
+      }
+
+      .um-assignment-deadline-pill[data-tone="complete"] {
+        background: #dcfce7;
+        color: #166534;
+      }
+
+      @media (max-width: 880px) {
+        .um-assignment-deadline-fields {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      .um-assignment-heading {
+        display: grid;
+        gap: 5px;
+        min-width: 0;
+      }
+
+      .um-assignment-task-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 5px;
+      }
+
+      .um-assignment-task-meta span {
+        border-radius: 6px;
+        background: rgba(15, 23, 42, 0.06);
+        color: #64748b;
+        font-size: 10px;
+        font-weight: 860;
+        letter-spacing: 0;
+        line-height: 1;
+        padding: 4px 6px;
+      }
+
+      .um-assignment-course {
+        overflow: hidden;
+        color: #2563eb;
+        font-size: 12px;
+        font-weight: 800;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .um-assignment-status-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+      }
+
+      .um-assignment-pill {
+        border-radius: 999px;
+        background: #e2e8f0;
+        color: #475569;
+        font-size: 11px;
+        font-weight: 820;
+        line-height: 1;
+        padding: 5px 8px;
+      }
+
+      .um-assignment-pill[data-status="submitted"] {
+        background: #dcfce7;
+        color: #166534;
+      }
+
+      .um-assignment-pill[data-status="unchecked"] {
+        background: #e0f2fe;
+        color: #075985;
+      }
+
+      .um-assignment-pill[data-status="pending_confirmation"] {
+        background: #e0f2fe;
+        color: #075985;
+      }
+
+      .um-assignment-pill[data-status="not_submitted"] {
+        background: #fef3c7;
+        color: #92400e;
+      }
+
+      .um-assignment-pill[data-status="unpublished"] {
+        background: #ede9fe;
+        color: #5b21b6;
+      }
+
+      .um-assignment-pill[data-status="unknown"] {
+        background: #f1f5f9;
+        color: #475569;
+      }
+
+      .um-assignment-evidence {
+        border: 1px solid rgba(148, 163, 184, 0.14);
+        border-radius: 12px;
+        background: rgba(248, 250, 252, 0.72);
+        color: #334155;
+        font-size: 12px;
+        font-weight: 650;
+        line-height: 1.55;
+        padding: 9px 10px;
+      }
+
+      @media (max-width: 780px) {
+        .um-assignment-card-header {
+          display: grid;
+        }
+
+        .um-assignment-card .um-actions {
+          justify-content: flex-start;
+        }
+      }
+
+      .um-ai-summary-preview {
+        overflow: auto;
+        max-height: 360px;
+        margin: 10px 0 0;
+        border: 1px solid rgba(148, 163, 184, 0.16);
+        border-radius: 12px;
+        background: rgba(248, 250, 252, 0.82);
+        color: #334155;
+        font: 600 12px/1.65 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+        padding: 10px;
+        white-space: pre-wrap;
+      }
+
+      .um-ai-summary-card-footer {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        margin-top: 10px;
+      }
+
+      .um-ai-summary-card {
+        display: grid;
+        gap: 12px;
+      }
+
+      .um-ai-summary-card-header {
+        display: flex;
+        align-items: start;
+        justify-content: space-between;
+        gap: 12px;
+      }
+
+      .um-ai-summary-heading {
+        display: grid;
+        gap: 5px;
+        min-width: 0;
+      }
+
+      .um-ai-summary-course {
+        overflow: hidden;
+        color: #2563eb;
+        font-size: 12px;
+        font-weight: 800;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .um-ai-summary-card h3 {
+        margin: 0;
+        color: #172033;
+        font-size: 17px;
+        line-height: 1.35;
+      }
+
+      .um-ai-summary-chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+      }
+
+      .um-ai-summary-chips span {
+        border-radius: 999px;
+        background: rgba(226, 232, 240, 0.76);
+        color: #475569;
+        font-size: 11px;
+        font-weight: 760;
+        line-height: 1;
+        padding: 5px 8px;
+      }
+
+      .um-ai-summary-lines {
+        display: grid;
+        gap: 7px;
+        border: 1px solid rgba(37, 99, 235, 0.12);
+        border-radius: 14px;
+        background: rgba(239, 246, 255, 0.72);
+        padding: 12px;
+      }
+
+      .um-ai-summary-lines p {
+        margin: 0;
+        color: #1e293b;
+        font-size: 13px;
+        line-height: 1.65;
+      }
+
+      .um-ai-summary-lines p::before {
+        color: #2563eb;
+        content: "・";
+        font-weight: 900;
+        margin-right: 4px;
+      }
+
+      .um-ai-summary-details {
+        color: #475569;
+      }
+
+      .um-ai-summary-details summary {
+        width: max-content;
+        cursor: pointer;
+        color: #2563eb;
+        font-size: 12px;
+        font-weight: 780;
+      }
+
+      .um-ai-summary-card-footer p {
+        overflow: hidden;
+        margin: 0;
+        color: #64748b;
+        font-size: 11px;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .um-diagnostics-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        gap: 10px;
+        margin-top: 14px;
+      }
+
+      .um-diagnostic-card {
+        display: grid;
+        gap: 5px;
+        border: 1px solid #dbe3ee;
+        border-left: 4px solid #94a3b8;
+        border-radius: 8px;
+        background: rgba(255, 255, 255, 0.78);
+        padding: 12px;
+      }
+
+      .um-diagnostic-card[data-status="ok"] {
+        border-left-color: #22c55e;
+      }
+
+      .um-diagnostic-card[data-status="warning"] {
+        border-left-color: #f59e0b;
+      }
+
+      .um-diagnostic-card[data-status="error"] {
+        border-left-color: #ef4444;
+      }
+
+      .um-diagnostic-card strong {
+        color: #172033;
+        font-size: 14px;
+      }
+
+      .um-diagnostic-card span {
+        color: #64748b;
+        font-size: 12px;
+      }
+
+      @media (max-width: 720px) {
+        .um-options-header {
+          align-items: start;
+          grid-template-columns: 1fr;
+        }
+
+        .um-options-header::before {
+          display: none;
+        }
+
+        .um-options-header > div:first-child,
+        .um-options-header .um-actions {
+          grid-column: 1;
+          grid-row: auto;
+          justify-self: start;
+        }
+
+        .um-options-layout {
+          grid-template-columns: 1fr;
+        }
+
+        .um-status,
+        .um-top-tabs {
+          margin-left: 0;
+        }
+
+        .um-side-nav {
+          position: static;
+          width: auto;
+          min-height: 0;
+          padding: 44px 12px 12px;
+        }
+
+        .um-settings-stack {
+          grid-column: auto;
+        }
+
+        .um-field {
+          grid-template-columns: 1fr;
+        }
+
+        .um-status-grid,
+        .um-preset-list {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      @media (min-width: 721px) and (max-width: 980px) {
+        .um-status-grid {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .um-preset-list {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="um-options-shell">
+      <header class="um-options-header">
+        <div>
+          <p class="um-eyebrow">MOOCs Ultimate</p>
+          <h1>設定</h1>
+        </div>
+        <div class="um-actions">
+          <button id="save-settings" class="primary" type="button">保存</button>
+          <button id="reset-settings" type="button">初期化</button>
+        </div>
+      </header>
+
+      <p id="save-status" class="um-status" role="status"></p>
+      <nav class="um-top-tabs" aria-label="設定ページ">
+        <button type="button" data-view="settings" aria-selected="true">設定</button>
+        <button type="button" data-view="memos" aria-selected="false">メモ一覧</button>
+        <button type="button" data-view="assignments" aria-selected="false">課題一覧</button>
+        <button type="button" data-view="ai-summaries" aria-selected="false">AI要約</button>
+        <button id="diagnostics-tab" type="button" data-view="diagnostics" aria-selected="false" hidden>診断</button>
+        <button type="button" data-view="backup" aria-selected="false">バックアップ</button>
+      </nav>
+
+      <section id="settings-view" class="um-view">
+        <div class="um-options-layout">
+          <nav id="settings-nav" class="um-side-nav" aria-label="設定カテゴリ"></nav>
+          <section id="settings-root" class="um-settings-stack"></section>
+        </div>
+      </section>
+
+      <section id="memo-list-section" class="um-view um-panel" hidden>
+        <h2>メモ一覧</h2>
+        <div class="um-memo-toolbar">
+          <input id="memo-search" type="search" placeholder="メモを検索" />
+          <button id="memo-export" type="button">メモJSONをエクスポート</button>
+          <label class="um-file-button">
+            メモJSONをインポート
+            <input id="memo-import" type="file" accept="application/json,.json" />
+          </label>
+        </div>
+        <div id="memo-results" class="um-memo-results"></div>
+      </section>
+
+      <section id="assignment-list-section" class="um-view um-panel" hidden>
+        <h2>課題提出済み一覧</h2>
+        <p id="assignment-summary" class="um-section-description"></p>
+        <div class="um-memo-toolbar">
+          <input id="assignment-search" type="search" placeholder="科目・講義回・課題名・URLを検索" />
+          <select id="assignment-filter" aria-label="課題状態で絞り込み">
+            <option value="all">すべて</option>
+            <option value="unchecked">未確認</option>
+            <option value="submitted">提出済み</option>
+            <option value="pending_confirmation">確認待ち</option>
+            <option value="not_submitted">未提出の可能性</option>
+            <option value="unpublished">課題未公開</option>
+            <option value="unknown">確認不能</option>
+          </select>
+          <select id="assignment-sort" aria-label="課題の並び順">
+            <option value="deadline-asc">期限が近い順</option>
+            <option value="deadline-desc">期限が遠い順</option>
+            <option value="course">科目・講義回順</option>
+            <option value="updated">確認が新しい順</option>
+          </select>
+          <button id="assignment-refresh" type="button">再読み込み</button>
+          <button id="assignment-export" type="button">JSONを書き出し</button>
+          <button id="assignment-clear-filtered" type="button">表示中を削除</button>
+        </div>
+        <div id="assignment-quick-filters" class="um-assignment-quick-filters" aria-label="課題提出状態のクイックフィルタ"></div>
+        <div id="assignment-course-tabs" class="um-assignment-tabs" aria-label="科目で絞り込み"></div>
+        <div id="assignment-lecture-tabs" class="um-assignment-tabs" aria-label="講義回で絞り込み"></div>
+        <div id="assignment-results" class="um-memo-results"></div>
+      </section>
+
+      <section id="ai-summary-section" class="um-view um-panel" hidden>
+        <h2>AI要約一覧</h2>
+        <p id="ai-summary-usage" class="um-section-description">
+          保存済みのAI要約を確認できます。token数は要約を送信するときだけ表示します。
+        </p>
+        <div class="um-memo-toolbar">
+          <input id="ai-summary-search" type="search" placeholder="AI要約を検索" />
+          <button id="ai-summary-refresh" type="button">再読み込み</button>
+        </div>
+        <div id="ai-summary-results" class="um-memo-results"></div>
+      </section>
+
+      <section id="diagnostics-section" class="um-view um-panel" hidden>
+        <h2>デベロッパー診断</h2>
+        <p id="diagnostics-summary" class="um-section-description">
+          拡張機能の内部接続とAPI状態を確認します。個人情報やAPIキーは表示しません。
+        </p>
+        <div class="um-actions">
+          <button id="diagnostics-refresh" type="button">再診断</button>
+          <button id="diagnostics-export" type="button" disabled>診断JSONを書き出し</button>
+        </div>
+        <div id="diagnostics-results" class="um-diagnostics-grid"></div>
+      </section>
+
+      <section id="backup-view" class="um-view um-panel" hidden>
+        <h2>バックアップ</h2>
+        <p class="um-section-description">設定JSONの保存・復元を行います。壊れたJSONは読み込まず、エラーとして表示します。</p>
+        <div class="um-actions">
+          <button id="export-settings" type="button">設定をエクスポート</button>
+          <label class="um-file-button">
+            設定をインポート
+            <input id="import-settings" type="file" accept="application/json,.json" />
+          </label>
+        </div>
+      </section>
+    </main>
+  </body>
+</html>

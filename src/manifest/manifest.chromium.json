@@ -1,0 +1,68 @@
+{
+  "manifest_version": 3,
+  "name": "MOOCs Ultimate",
+  "short_name": "MOOCs Ultimate",
+  "version": "0.1.0",
+  "version_name": "0.1.0-alpha.1",
+  "description": "Personal helper extension for INIAD MOOCs.",
+  "icons": {
+    "16": "icons/icon16.png",
+    "32": "icons/icon32.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "permissions": ["storage", "downloads", "tabs", "activeTab", "clipboardWrite", "scripting"],
+  "host_permissions": [
+    "https://moocs.iniad.org/*",
+    "https://www.ace.toyo.ac.jp/ct/home*",
+    "https://docs.google.com/presentation/*",
+    "https://api.openai.iniad.org/*"
+  ],
+  "background": {
+    "service_worker": "background/index.js",
+    "type": "module"
+  },
+  "action": {
+    "default_title": "MOOCs Ultimate",
+    "default_popup": "popup/index.html",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "32": "icons/icon32.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+  "commands": {
+    "ultimateMoocs.captureScreenshot": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+S",
+        "mac": "Command+Shift+S"
+      },
+      "description": "Capture the current MOOCs page screenshot"
+    }
+  },
+  "options_page": "options/index.html",
+  "content_scripts": [
+    {
+      "matches": ["https://moocs.iniad.org/*"],
+      "css": ["styles/content.css"],
+      "js": ["content/index.js"],
+      "run_at": "document_start"
+    },
+    {
+      "matches": ["https://docs.google.com/presentation/*"],
+      "js": ["slides/index.js"]
+    },
+    {
+      "matches": ["https://www.ace.toyo.ac.jp/ct/home*"],
+      "css": ["styles/content.css"],
+      "js": ["ace/index.js"]
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": ["page/alert-hook.js", "page/dev-alert.js"],
+      "matches": ["https://moocs.iniad.org/*"]
+    }
+  ]
+}

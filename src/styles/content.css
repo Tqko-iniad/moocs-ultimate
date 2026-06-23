@@ -1,0 +1,2537 @@
+.um-status-badge {
+  position: fixed;
+  right: 16px;
+  bottom: 16px;
+  z-index: 2147483647;
+  padding: 8px 10px;
+  border: 1px solid rgba(15, 23, 42, 0.12);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.94);
+  color: #0f172a;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.14);
+  font: 600 12px/1.2 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+.um-scroll-top-button {
+  position: fixed;
+  right: 16px;
+  bottom: 56px;
+  z-index: 2147483647;
+  min-width: 44px;
+  min-height: 36px;
+  border: 1px solid rgba(15, 23, 42, 0.16);
+  border-radius: 8px;
+  background: #2563eb;
+  color: #ffffff;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.16);
+  cursor: pointer;
+  font: 700 12px/1.2 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+.um-textarea-counter {
+  display: block;
+  width: fit-content;
+  margin: 4px 0 8px auto;
+  color: #64748b;
+  font: 600 12px/1.2 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+.um-tab-colored {
+  --um-tab-color: #2563eb;
+  position: relative;
+  transition:
+    background-color 0.16s ease,
+    border-color 0.16s ease,
+    color 0.16s ease;
+}
+
+.um-tab-colored.um-tab-mode-full {
+  border-color: color-mix(in srgb, var(--um-tab-color) 45%, transparent) !important;
+  background-color: color-mix(in srgb, var(--um-tab-color) 18%, white) !important;
+  color: #0f172a !important;
+}
+
+.pagination > li > a.um-tab-colored,
+.pagination > li > span.um-tab-colored {
+  border-color: color-mix(in srgb, var(--um-tab-color) 42%, rgba(148, 163, 184, 0.28)) !important;
+  border-bottom: 4px solid color-mix(in srgb, var(--um-tab-color) 78%, #2563eb) !important;
+  background: color-mix(in srgb, var(--um-tab-color) 62%, rgba(255, 255, 255, 0.9)) !important;
+  color: #172033 !important;
+  font-weight: 850 !important;
+  transition: none !important;
+}
+
+.pagination > li:first-child > a.um-tab-colored,
+.pagination > li:first-child > span.um-tab-colored,
+.pagination > li:last-child > a.um-tab-colored,
+.pagination > li:last-child > span.um-tab-colored {
+  border-color: rgba(148, 163, 184, 0.28) !important;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.28) !important;
+  background: rgba(255, 255, 255, 0.9) !important;
+  color: #475569 !important;
+}
+
+.pagination > li > a.um-tab-colored:hover,
+.pagination > li > span.um-tab-colored:hover,
+.pagination > li > a.um-tab-colored:focus,
+.pagination > li > span.um-tab-colored:focus {
+  border-color: color-mix(in srgb, var(--um-tab-color) 42%, rgba(148, 163, 184, 0.28)) !important;
+  border-bottom-color: color-mix(in srgb, var(--um-tab-color) 78%, #2563eb) !important;
+  background: color-mix(in srgb, var(--um-tab-color) 62%, rgba(255, 255, 255, 0.9)) !important;
+  color: #172033 !important;
+}
+
+.pagination > .active > a.um-tab-colored,
+.pagination > .active > span.um-tab-colored {
+  background: color-mix(in srgb, var(--um-tab-color) 72%, rgba(255, 255, 255, 0.82)) !important;
+  color: #ffffff !important;
+}
+
+.pagination > li > a.um-tab-colored.um-tab-mode-badge::after,
+.pagination > li > span.um-tab-colored.um-tab-mode-badge::after,
+.pagination > li > a.um-tab-colored.um-tab-mode-icon::before,
+.pagination > li > span.um-tab-colored.um-tab-mode-icon::before {
+  display: none;
+}
+
+.um-tab-colored.um-tab-mode-badge::after,
+.um-tab-colored.um-tab-mode-icon::before {
+  display: inline-block;
+  width: 0.68em;
+  height: 0.68em;
+  border-radius: 999px;
+  background: var(--um-tab-color);
+  content: "";
+  vertical-align: middle;
+}
+
+.um-tab-colored.um-tab-mode-badge::after {
+  margin-left: 0.45em;
+}
+
+.um-tab-colored.um-tab-mode-icon::before {
+  margin-right: 0.45em;
+}
+
+.pagination > li > a.um-assignment-tab-status,
+.pagination > li > span.um-assignment-tab-status,
+.pagination > li > button.um-assignment-tab-status {
+  position: relative !important;
+}
+
+.um-assignment-tab-marker {
+  position: absolute;
+  right: 5px;
+  top: 5px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 0.78em;
+  height: 0.78em;
+  border: 1px solid rgba(15, 23, 42, 0.22);
+  border-radius: 999px;
+  background: #38bdf8;
+  color: #052e16;
+  box-shadow: 0 1px 5px rgba(2, 6, 23, 0.24);
+  font-size: 0.45em;
+  font-weight: 950;
+  line-height: 1;
+  pointer-events: none;
+}
+
+.um-assignment-tab-status[data-um-assignment-status="submitted"] .um-assignment-tab-marker {
+  border-color: rgba(187, 247, 208, 0.72);
+  background: #22c55e;
+  color: #052e16;
+}
+
+.um-assignment-tab-status[data-um-assignment-status="not_submitted"] .um-assignment-tab-marker {
+  border-color: rgba(253, 230, 138, 0.72);
+  background: #f59e0b;
+}
+
+.um-assignment-tab-status[data-um-assignment-status="pending_confirmation"] .um-assignment-tab-marker,
+.um-assignment-tab-status[data-um-assignment-status="unchecked"] .um-assignment-tab-marker,
+.um-assignment-tab-status[data-um-assignment-status="unknown"] .um-assignment-tab-marker {
+  border-color: rgba(186, 230, 253, 0.72);
+  background: #38bdf8;
+}
+
+.um-assignment-tab-status[data-um-assignment-status="unpublished"] .um-assignment-tab-marker {
+  border-color: rgba(221, 214, 254, 0.72);
+  background: #a78bfa;
+}
+
+.um-memo-panel,
+.um-external-links-panel,
+.um-slide-tools {
+  position: fixed;
+  z-index: 2147483646;
+  box-sizing: border-box;
+  width: min(320px, calc(100vw - 24px));
+  border: 1px solid rgba(148, 163, 184, 0.22);
+  border-radius: 8px;
+  background: rgba(2, 6, 23, 0.38);
+  color: #f8fafc;
+  box-shadow: 0 12px 32px rgba(2, 6, 23, 0.18);
+  backdrop-filter: blur(6px) saturate(108%);
+  -webkit-backdrop-filter: blur(6px) saturate(108%);
+  font: 500 13px/1.45 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+.um-memo-panel {
+  left: 16px;
+  bottom: 16px;
+  max-height: min(520px, calc(100vh - 32px));
+  padding: 10px;
+  overflow: auto;
+}
+
+.um-external-links-panel {
+  right: 16px;
+  top: 88px;
+  width: min(260px, calc(100vw - 24px));
+  max-height: min(320px, calc(100vh - 112px));
+  padding: 0;
+  overflow: auto;
+}
+
+.um-slide-tools {
+  left: 16px;
+  top: 88px;
+  display: grid;
+  gap: 8px;
+  padding: 10px;
+}
+
+.um-panel-header,
+.um-memo-actions,
+.um-panel-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+}
+
+.um-panel-actions,
+.um-memo-actions {
+  justify-content: flex-end;
+}
+
+.um-memo-list {
+  display: grid;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.um-memo-item {
+  display: grid;
+  gap: 6px;
+}
+
+.um-memo-textarea {
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 90px;
+  resize: vertical;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  padding: 8px;
+  font: inherit;
+}
+
+.um-memo-panel button,
+.um-course-tools button,
+.um-slide-tools button {
+  min-height: 28px;
+  border: 1px solid #cbd5e1;
+  border-radius: 7px;
+  background: #ffffff;
+  color: #0f172a;
+  cursor: pointer;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 3px 7px;
+}
+
+.um-external-links-panel ul {
+  display: grid;
+  gap: 5px;
+  margin: 0;
+  padding: 8px 10px 10px;
+  list-style: none;
+}
+
+.um-external-links-panel summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 34px;
+  padding: 0 10px;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.um-external-links-panel summary span:last-child {
+  min-width: 20px;
+  border-radius: 999px;
+  background: rgba(14, 165, 233, 0.22);
+  color: #e0f2fe;
+  font-size: 11px;
+  line-height: 20px;
+  text-align: center;
+}
+
+.um-external-links-panel a {
+  display: block;
+  overflow: hidden;
+  color: #bae6fd;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.um-drive-button {
+  position: fixed;
+  right: 16px;
+  bottom: 104px;
+  z-index: 2147483647;
+  min-width: 58px;
+  min-height: 36px;
+  box-sizing: border-box;
+  border: 1px solid rgba(21, 128, 61, 0.24);
+  border-radius: 8px;
+  background: #16a34a;
+  color: #ffffff !important;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.16);
+  font: 700 12px/36px system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  text-align: center;
+  text-decoration: none !important;
+}
+
+.um-toast {
+  position: fixed;
+  right: 18px;
+  bottom: 18px;
+  z-index: 2147483647;
+  max-width: min(360px, calc(100vw - 36px));
+  box-sizing: border-box;
+  border: 1px solid rgba(125, 211, 252, 0.28);
+  border-radius: 12px;
+  background: rgba(2, 6, 23, 0.86);
+  color: #f8fafc;
+  box-shadow: 0 18px 42px rgba(15, 23, 42, 0.28);
+  padding: 11px 14px;
+  font: 700 13px/1.45 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  opacity: 1;
+  transform: translateY(0);
+  transition:
+    opacity 0.18s ease,
+    transform 0.18s ease;
+  backdrop-filter: blur(12px) saturate(120%);
+  -webkit-backdrop-filter: blur(12px) saturate(120%);
+}
+
+.um-toast-hide {
+  opacity: 0;
+  transform: translateY(8px);
+}
+
+.um-screenshot-dialog {
+  position: fixed;
+  right: 18px;
+  bottom: 18px;
+  z-index: 2147483647;
+  display: grid;
+  gap: 10px;
+  width: min(420px, calc(100vw - 36px));
+  box-sizing: border-box;
+  border: 1px solid rgba(125, 211, 252, 0.28);
+  border-radius: 14px;
+  background: rgba(2, 6, 23, 0.9);
+  color: #f8fafc;
+  box-shadow: 0 22px 56px rgba(15, 23, 42, 0.34);
+  padding: 14px;
+  font: 600 13px/1.45 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  backdrop-filter: blur(14px) saturate(120%);
+  -webkit-backdrop-filter: blur(14px) saturate(120%);
+}
+
+.um-screenshot-dialog strong {
+  font-size: 14px;
+}
+
+.um-screenshot-dialog p {
+  margin: 0;
+  color: #cbd5e1;
+}
+
+.um-screenshot-dialog img {
+  display: block;
+  width: 100%;
+  max-height: 220px;
+  object-fit: contain;
+  border: 1px solid rgba(226, 232, 240, 0.24);
+  border-radius: 10px;
+  background: rgba(15, 23, 42, 0.55);
+}
+
+.um-screenshot-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.um-screenshot-actions button {
+  min-height: 32px;
+  border: 1px solid rgba(148, 163, 184, 0.34);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.12);
+  color: #f8fafc;
+  cursor: pointer;
+  font: inherit;
+  font-weight: 750;
+  padding: 6px 10px;
+}
+
+.um-screenshot-actions button:first-child {
+  border-color: #60a5fa;
+  background: #2563eb;
+}
+
+.um-course-drive-button {
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  min-height: 34px;
+  box-sizing: border-box;
+  margin: 6px 0 0 8px;
+  border: 1px solid rgba(134, 239, 172, 0.32);
+  border-radius: 7px;
+  background: rgba(34, 197, 94, 0.88);
+  color: #ffffff !important;
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.18);
+  font: 700 13px/1.2 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  padding: 8px 13px;
+  text-align: center;
+  text-decoration: none !important;
+  vertical-align: middle;
+  white-space: nowrap;
+}
+
+.um-course-drive-button::before {
+  content: "";
+  display: inline-block;
+  width: 14px;
+  height: 10px;
+  margin-right: 6px;
+  border-radius: 2px;
+  background: currentColor;
+  box-shadow: 3px -4px 0 -1px currentColor;
+  opacity: 0.96;
+}
+
+.um-course-drive-button:hover,
+.um-course-drive-button:focus-visible {
+  background: rgba(22, 163, 74, 0.96);
+  color: #ffffff !important;
+  text-decoration: none !important;
+}
+
+.um-course-tools {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin: 0 0 6px;
+}
+
+.um-course-favorite {
+  outline: 2px solid rgba(245, 158, 11, 0.42);
+  outline-offset: 2px;
+}
+
+.um-slide-tools label {
+  display: grid;
+  gap: 3px;
+}
+
+.um-slide-tools input[type="range"] {
+  width: 100%;
+}
+
+.um-slide-tools .um-inline-check {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.um-download-panel {
+  position: relative;
+  overflow: hidden;
+  box-sizing: border-box;
+  margin: 10px 0 14px;
+  border: 1px solid rgba(125, 211, 252, 0.28);
+  border-radius: 8px;
+  background: rgba(2, 6, 23, 0.38);
+  backdrop-filter: blur(6px) saturate(108%);
+  -webkit-backdrop-filter: blur(6px) saturate(108%);
+  color: #f8fafc;
+  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.18);
+  padding: 14px 16px;
+  font: 500 13px/1.45 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+.um-download-panel .um-panel-header {
+  align-items: center;
+}
+
+.um-download-panel .um-panel-header strong {
+  display: block;
+  margin-top: 1px;
+  color: #ffffff;
+  font-size: 18px;
+  font-weight: 850;
+  line-height: 1.15;
+}
+
+.um-download-kicker {
+  display: block;
+  color: #7dd3fc;
+  font-size: 11px;
+  font-weight: 850;
+  letter-spacing: 0.12em;
+}
+
+.um-download-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 12px 0 10px;
+}
+
+.um-download-panel button {
+  min-height: 36px;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+  backdrop-filter: blur(14px);
+  cursor: pointer;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 800;
+  padding: 7px 12px;
+}
+
+.um-download-panel [data-um-download="course"] {
+  border-color: rgba(125, 211, 252, 0.34);
+  background: rgba(14, 116, 144, 0.62);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.14);
+}
+
+.um-download-panel [data-um-download="cancel"] {
+  min-height: 30px;
+  padding: 5px 10px;
+  font-size: 12px;
+  background: rgba(15, 23, 42, 0.34);
+}
+
+.um-download-panel button:disabled {
+  cursor: not-allowed;
+  opacity: 0.48;
+}
+
+.um-slide-text-tool {
+  display: grid;
+  gap: 8px;
+  margin-top: 10px;
+  border: 1px solid rgba(125, 211, 252, 0.22);
+  border-radius: 8px;
+  background: rgba(15, 23, 42, 0.3);
+  padding: 10px;
+}
+
+.um-slide-text-header,
+.um-slide-text-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.um-slide-text-header > div {
+  display: grid;
+  min-width: 0;
+  gap: 2px;
+}
+
+.um-slide-text-header strong {
+  color: #f8fafc;
+  font-size: 13px;
+  font-weight: 850;
+}
+
+.um-slide-text-header span,
+.um-slide-text-count {
+  color: rgba(226, 232, 240, 0.74);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.um-slide-text-status {
+  margin: 0;
+  color: rgba(224, 242, 254, 0.9);
+  font-size: 12px;
+  font-weight: 750;
+}
+
+.um-slide-text-status.error {
+  color: #fecaca;
+}
+
+.um-slide-text-tool[data-state="busy"] .um-slide-text-status::after {
+  display: inline-block;
+  width: 1.4em;
+  content: "...";
+  animation: um-ai-pulse 1s steps(3, end) infinite;
+}
+
+.um-slide-text-actions {
+  justify-content: flex-end;
+}
+
+.um-slide-text-actions[hidden],
+.um-slide-text-output[hidden] {
+  display: none;
+}
+
+.um-slide-text-count {
+  margin-right: auto;
+}
+
+.um-slide-text-output {
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 180px;
+  max-height: 420px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 8px;
+  background: rgba(2, 6, 23, 0.5);
+  color: #f8fafc;
+  font: 600 12px/1.6 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  outline: none;
+  padding: 10px;
+  resize: vertical;
+}
+
+.um-slide-text-results {
+  display: grid;
+  gap: 4px;
+  margin: 0;
+  color: rgba(226, 232, 240, 0.78);
+  font-size: 11px;
+  font-weight: 700;
+  list-style: none;
+  padding: 0;
+}
+
+.um-slide-text-results li.ok {
+  color: #bbf7d0;
+}
+
+.um-slide-text-results li.warn {
+  color: #fecaca;
+}
+
+.um-clipboard-fallback {
+  position: fixed;
+  top: 0;
+  left: -10000px;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.um-download-candidates {
+  display: grid;
+  gap: 8px;
+  margin: 8px 0 0;
+}
+
+.um-download-candidate-summary {
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 7px;
+  background: rgba(15, 23, 42, 0.32);
+  color: rgba(248, 250, 252, 0.9);
+  font-size: 12px;
+  font-weight: 700;
+  padding: 7px 9px;
+}
+
+.um-download-candidate-list {
+  display: grid;
+  gap: 6px;
+  max-height: 220px;
+  overflow: auto;
+}
+
+.um-download-candidate {
+  display: grid;
+  grid-template-columns: 18px minmax(0, 1fr);
+  align-items: flex-start;
+  gap: 8px;
+  border: 1px solid #e2e8f0;
+  border-radius: 7px;
+  background: #ffffff;
+  padding: 8px;
+}
+
+.um-download-status,
+.um-download-mode,
+.um-download-counts,
+.um-download-panel p {
+  color: rgba(248, 250, 252, 0.9);
+}
+
+.um-download-mode {
+  border: 1px solid rgba(125, 211, 252, 0.28);
+  border-radius: 999px;
+  background: rgba(14, 165, 233, 0.18);
+  color: #e0f2fe;
+  font-size: 11px;
+  font-weight: 850;
+  padding: 2px 8px;
+}
+
+.um-download-mode:not([hidden]) {
+  display: inline-flex;
+  align-items: center;
+}
+
+.um-download-mode[data-um-download-mode="fallback"] {
+  border-color: rgba(251, 146, 60, 0.36);
+  background: rgba(251, 146, 60, 0.18);
+  color: #ffedd5;
+}
+
+.um-download-details {
+  margin-top: 8px;
+}
+
+.um-download-details summary {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 750;
+}
+
+.um-download-details p {
+  margin: 7px 0 0;
+  font-size: 12px;
+}
+
+.um-download-candidate[data-um-candidate-disabled="true"] {
+  background: #f8fafc;
+  color: #64748b;
+}
+
+.um-download-candidate input {
+  width: 16px;
+  height: 16px;
+  margin: 2px 0 0;
+}
+
+.um-download-candidate-body {
+  display: grid;
+  min-width: 0;
+  gap: 2px;
+}
+
+.um-download-candidate-title {
+  overflow-wrap: anywhere;
+  color: #0f172a;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.um-download-candidate-meta {
+  overflow-wrap: anywhere;
+  color: #64748b;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.um-download-candidate[data-um-candidate-kind="slides"] {
+  border-left: 4px solid #ef4444;
+}
+
+.um-download-candidate[data-um-candidate-kind="drive"] {
+  border-left: 4px solid #22c55e;
+}
+
+.um-download-candidate[data-um-candidate-kind="file"] {
+  border-left: 4px solid #2563eb;
+}
+
+.um-download-candidate[data-um-candidate-kind="streaming"] {
+  border-left: 4px solid #f59e0b;
+}
+
+.um-download-progress {
+  overflow: hidden;
+  height: 5px;
+  border-radius: 999px;
+  background: #e2e8f0;
+}
+
+.um-download-progress-bar {
+  width: 0%;
+  height: 100%;
+  border-radius: inherit;
+  background: #2563eb;
+  transition: width 0.18s ease;
+}
+
+.um-download-current {
+  overflow-wrap: anywhere;
+  font-weight: 700;
+}
+
+.um-download-failures {
+  display: grid;
+  gap: 4px;
+  max-height: 120px;
+  margin: 8px 0 0;
+  padding-left: 18px;
+  overflow: auto;
+  color: #b91c1c;
+}
+
+.um-lecture-tools {
+  position: relative;
+  z-index: 5;
+  box-sizing: border-box;
+  margin: 8px 0 12px;
+  border: 1px solid rgba(125, 211, 252, 0.22);
+  border-radius: 8px;
+  background: rgba(2, 6, 23, 0.42);
+  color: #f8fafc;
+  box-shadow: 0 14px 34px rgba(2, 6, 23, 0.16);
+  backdrop-filter: blur(8px) saturate(112%);
+  -webkit-backdrop-filter: blur(8px) saturate(112%);
+  padding: 10px;
+}
+
+.um-lecture-tools-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.um-lecture-tools-kicker {
+  display: block;
+  color: #7dd3fc;
+  font-size: 10px;
+  font-weight: 850;
+  letter-spacing: 0.12em;
+}
+
+.um-lecture-tools-bar strong {
+  display: block;
+  color: #ffffff;
+  font-size: 15px;
+  font-weight: 850;
+  line-height: 1.15;
+}
+
+.um-lecture-assignment-check {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin-left: auto;
+}
+
+.um-lecture-assignment-check[hidden] {
+  display: none;
+}
+
+.um-lecture-assignment-check button {
+  min-height: 30px;
+  border: 1px solid rgba(125, 211, 252, 0.26);
+  border-radius: 8px;
+  background: rgba(14, 116, 144, 0.32);
+  color: #e0f2fe;
+  cursor: pointer;
+  font: 850 12px/1.3 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  padding: 6px 10px;
+}
+
+.um-lecture-assignment-check button:disabled {
+  cursor: wait;
+  opacity: 0.68;
+}
+
+.um-lecture-assignment-status {
+  display: inline-flex;
+  align-items: center;
+  min-height: 28px;
+  border: 1px solid rgba(148, 163, 184, 0.18);
+  border-radius: 999px;
+  background: rgba(15, 23, 42, 0.34);
+  color: rgba(226, 232, 240, 0.86);
+  font-size: 11px;
+  font-weight: 850;
+  padding: 4px 9px;
+}
+
+.um-lecture-assignment-status[data-state="checking"] {
+  border-color: rgba(96, 165, 250, 0.3);
+  background: rgba(37, 99, 235, 0.3);
+  color: #dbeafe;
+}
+
+.um-lecture-assignment-status[data-state="action"] {
+  border-color: rgba(251, 191, 36, 0.34);
+  background: rgba(120, 53, 15, 0.34);
+  color: #fde68a;
+}
+
+.um-lecture-assignment-status[data-state="unchecked"] {
+  border-color: rgba(56, 189, 248, 0.32);
+  background: rgba(14, 116, 144, 0.28);
+  color: #bae6fd;
+}
+
+.um-lecture-assignment-status[data-state="complete"] {
+  border-color: rgba(34, 197, 94, 0.28);
+  background: rgba(22, 101, 52, 0.3);
+  color: #bbf7d0;
+}
+
+.um-lecture-assignment-status[data-state="error"] {
+  border-color: rgba(248, 113, 113, 0.36);
+  background: rgba(127, 29, 29, 0.34);
+  color: #fecaca;
+}
+
+.um-lecture-tools-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.um-lecture-tools-tabs button {
+  min-height: 30px;
+  border: 1px solid rgba(125, 211, 252, 0.22);
+  border-radius: 8px;
+  background: rgba(15, 23, 42, 0.34);
+  color: #e0f2fe;
+  cursor: pointer;
+  font: 800 12px/1.3 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  padding: 6px 10px;
+}
+
+.um-lecture-assignment-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: 7px;
+  margin-top: 10px;
+  border-top: 1px solid rgba(148, 163, 184, 0.18);
+  padding-top: 10px;
+}
+
+.um-lecture-assignment-list[hidden] {
+  display: none;
+}
+
+.um-lecture-assignment-list-heading {
+  grid-column: 1 / -1;
+  color: rgba(226, 232, 240, 0.72);
+  font-size: 11px;
+  font-weight: 850;
+}
+
+.um-lecture-assignment-item {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 5px 8px;
+  align-items: center;
+  min-width: 0;
+  border: 1px solid rgba(148, 163, 184, 0.18);
+  border-left: 4px solid rgba(148, 163, 184, 0.42);
+  border-radius: 8px;
+  background: rgba(15, 23, 42, 0.3);
+  color: #e2e8f0;
+  padding: 8px 10px;
+  text-decoration: none;
+}
+
+.um-lecture-assignment-item:hover,
+.um-lecture-assignment-item:focus-visible {
+  border-color: rgba(125, 211, 252, 0.42);
+  background: rgba(15, 23, 42, 0.44);
+  color: #ffffff;
+}
+
+.um-lecture-assignment-item[data-status="not_submitted"],
+.um-lecture-assignment-item[data-status="pending_confirmation"] {
+  border-left-color: #f59e0b;
+  background: rgba(120, 53, 15, 0.3);
+}
+
+.um-lecture-assignment-item[data-status="submitted"] {
+  border-left-color: #22c55e;
+}
+
+.um-lecture-assignment-item[data-status="unpublished"] {
+  border-left-color: #a78bfa;
+}
+
+.um-lecture-assignment-item[data-status="unchecked"],
+.um-lecture-assignment-item[data-status="unknown"] {
+  border-left-color: #38bdf8;
+}
+
+.um-lecture-assignment-item[data-deadline-tone="overdue"] {
+  border-left-color: #ef4444;
+  background: rgba(127, 29, 29, 0.34);
+}
+
+.um-lecture-assignment-item[data-deadline-tone="today"] {
+  border-left-color: #f97316;
+  background: rgba(124, 45, 18, 0.34);
+}
+
+.um-lecture-assignment-item[data-deadline-tone="soon"] {
+  border-left-color: #facc15;
+}
+
+.um-lecture-assignment-title,
+.um-lecture-assignment-meta {
+  overflow: hidden;
+  min-width: 0;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.um-lecture-assignment-title {
+  color: #f8fafc;
+  font-size: 12px;
+  font-weight: 850;
+}
+
+.um-lecture-assignment-meta {
+  grid-column: 1;
+  color: rgba(226, 232, 240, 0.66);
+  font-size: 10px;
+  font-weight: 760;
+}
+
+.um-lecture-assignment-deadline {
+  grid-column: 1 / -1;
+  overflow: hidden;
+  min-width: 0;
+  border-radius: 6px;
+  background: rgba(148, 163, 184, 0.12);
+  color: rgba(226, 232, 240, 0.82);
+  font-size: 10px;
+  font-weight: 800;
+  line-height: 1.35;
+  padding: 4px 6px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.um-lecture-assignment-deadline[data-tone="overdue"] {
+  background: rgba(239, 68, 68, 0.2);
+  color: #fecaca;
+}
+
+.um-lecture-assignment-deadline[data-tone="today"],
+.um-lecture-assignment-deadline[data-tone="soon"] {
+  background: rgba(245, 158, 11, 0.2);
+  color: #fde68a;
+}
+
+.um-lecture-assignment-deadline[data-tone="scheduled"] {
+  background: rgba(14, 116, 144, 0.22);
+  color: #bae6fd;
+}
+
+.um-lecture-assignment-deadline[data-tone="complete"] {
+  background: rgba(22, 101, 52, 0.2);
+  color: #bbf7d0;
+}
+
+.um-lecture-assignment-deadline[data-tone="unpublished"] {
+  background: rgba(109, 40, 217, 0.18);
+  color: #ddd6fe;
+}
+
+.um-lecture-assignment-chip {
+  grid-column: 2;
+  grid-row: 1 / span 2;
+  border-radius: 999px;
+  background: rgba(148, 163, 184, 0.16);
+  color: rgba(226, 232, 240, 0.92);
+  font-size: 10px;
+  font-weight: 900;
+  padding: 4px 7px;
+  white-space: nowrap;
+}
+
+.um-lecture-assignment-item[data-status="not_submitted"] .um-lecture-assignment-chip,
+.um-lecture-assignment-item[data-status="pending_confirmation"] .um-lecture-assignment-chip {
+  background: rgba(251, 191, 36, 0.2);
+  color: #fde68a;
+}
+
+.um-lecture-assignment-item[data-status="submitted"] .um-lecture-assignment-chip {
+  background: rgba(34, 197, 94, 0.18);
+  color: #bbf7d0;
+}
+
+.um-lecture-assignment-item[data-status="unpublished"] .um-lecture-assignment-chip {
+  background: rgba(167, 139, 250, 0.18);
+  color: #ddd6fe;
+}
+
+.um-tool-tab-main,
+.um-tool-tab-status {
+  display: inline-flex;
+  align-items: center;
+  vertical-align: middle;
+}
+
+.um-tool-tab-status {
+  margin-left: 7px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 999px;
+  background: rgba(15, 23, 42, 0.35);
+  color: rgba(224, 242, 254, 0.82);
+  font-size: 10px;
+  font-weight: 850;
+  line-height: 1;
+  padding: 3px 6px;
+}
+
+.um-lecture-tools-tabs button[data-um-tool-state="cached"] .um-tool-tab-status {
+  border-color: rgba(34, 197, 94, 0.24);
+  background: rgba(22, 101, 52, 0.34);
+  color: #bbf7d0;
+}
+
+.um-lecture-tools-tabs button[data-um-tool-state="missing-key"] .um-tool-tab-status {
+  border-color: rgba(251, 191, 36, 0.24);
+  background: rgba(120, 53, 15, 0.34);
+  color: #fde68a;
+}
+
+.um-lecture-tools-tabs button[aria-selected="true"] {
+  border-color: rgba(125, 211, 252, 0.5);
+  background: rgba(14, 116, 144, 0.54);
+  color: #ffffff;
+}
+
+.um-lecture-tools-tabs [data-um-tool-close] {
+  color: rgba(226, 232, 240, 0.78);
+}
+
+.um-lecture-tools-tabs [data-um-tool-close][hidden] {
+  display: none;
+}
+
+.um-lecture-tools-panes {
+  margin-top: 10px;
+  border-top: 1px solid rgba(148, 163, 184, 0.14);
+  padding-top: 10px;
+}
+
+.um-lecture-tool-pane[hidden],
+.um-lecture-tools-panes[hidden] {
+  display: none;
+}
+
+.um-lecture-tool-pane > .um-download-panel,
+.um-lecture-tool-pane > .um-ai-panel {
+  margin: 0;
+  border: 0;
+  box-shadow: none;
+  padding: 0;
+  background: transparent;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+.um-assignment-status-panel {
+  position: relative;
+  display: grid;
+  gap: 10px;
+  overflow: hidden;
+  margin: 0 0 14px;
+  border: 1px solid rgba(148, 163, 184, 0.22);
+  border-radius: 8px;
+  background: rgba(15, 23, 42, 0.42);
+  backdrop-filter: blur(8px) saturate(112%);
+  -webkit-backdrop-filter: blur(8px) saturate(112%);
+  color: #f8fafc;
+  box-shadow: 0 14px 34px rgba(2, 6, 23, 0.14);
+  padding: 12px 14px;
+  font: 700 13px/1.45 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+.um-assignment-status-panel::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 4px;
+  background: rgba(148, 163, 184, 0.48);
+}
+
+.um-assignment-status-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  padding-left: 4px;
+}
+
+.um-assignment-status-main {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 9px;
+}
+
+.um-assignment-status-main strong {
+  color: rgba(248, 250, 252, 0.94);
+  font-size: 14px;
+}
+
+.um-assignment-status-badge {
+  display: inline-flex;
+  align-items: center;
+  min-height: 24px;
+  border: 1px solid rgba(148, 163, 184, 0.22);
+  border-radius: 999px;
+  background: rgba(30, 41, 59, 0.56);
+  color: #e2e8f0;
+  font-size: 12px;
+  font-weight: 900;
+  line-height: 1;
+  padding: 5px 10px;
+}
+
+.um-assignment-status-panel[data-status="submitted"] .um-assignment-status-badge {
+  border-color: rgba(34, 197, 94, 0.26);
+  background: rgba(22, 101, 52, 0.36);
+  color: #bbf7d0;
+}
+
+.um-assignment-status-panel[data-status="submitted"]::before {
+  background: #22c55e;
+}
+
+.um-assignment-status-panel[data-status="unchecked"] .um-assignment-status-badge {
+  border-color: rgba(125, 211, 252, 0.3);
+  background: rgba(14, 116, 144, 0.3);
+  color: #bae6fd;
+}
+
+.um-assignment-status-panel[data-status="unchecked"]::before,
+.um-assignment-status-panel[data-status="unknown"]::before {
+  background: #38bdf8;
+}
+
+.um-assignment-status-panel[data-status="not_submitted"] .um-assignment-status-badge {
+  border-color: rgba(251, 191, 36, 0.28);
+  background: rgba(120, 53, 15, 0.36);
+  color: #fde68a;
+}
+
+.um-assignment-status-panel[data-status="not_submitted"]::before {
+  background: #f59e0b;
+}
+
+.um-assignment-status-panel[data-status="pending_confirmation"] .um-assignment-status-badge {
+  border-color: rgba(125, 211, 252, 0.3);
+  background: rgba(14, 116, 144, 0.34);
+  color: #bae6fd;
+}
+
+.um-assignment-status-panel[data-status="pending_confirmation"]::before,
+.um-assignment-status-panel[data-status="checking"]::before {
+  background: #60a5fa;
+}
+
+.um-assignment-status-panel[data-status="checking"] .um-assignment-status-badge {
+  border-color: rgba(125, 211, 252, 0.28);
+  background: rgba(30, 64, 175, 0.32);
+  color: #bfdbfe;
+}
+
+.um-assignment-status-panel[data-status="unpublished"] .um-assignment-status-badge {
+  border-color: rgba(167, 139, 250, 0.3);
+  background: rgba(91, 33, 182, 0.34);
+  color: #ddd6fe;
+}
+
+.um-assignment-status-panel[data-status="unpublished"]::before {
+  background: #a78bfa;
+}
+
+.um-assignment-status-panel p,
+.um-assignment-status-panel small {
+  margin: 0;
+  color: rgba(226, 232, 240, 0.82);
+}
+
+.um-assignment-status-body {
+  display: grid;
+  gap: 7px;
+  margin-left: 4px;
+}
+
+.um-assignment-status-evidence {
+  border: 1px solid rgba(148, 163, 184, 0.14);
+  border-radius: 8px;
+  background: rgba(2, 6, 23, 0.18);
+  padding: 8px 10px;
+}
+
+.um-assignment-status-panel small {
+  font-size: 12px;
+  font-weight: 760;
+}
+
+.um-assignment-deadline-control {
+  border: 1px solid rgba(148, 163, 184, 0.16);
+  border-radius: 8px;
+  background: rgba(2, 6, 23, 0.2);
+}
+
+.um-assignment-deadline-control summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 36px;
+  color: rgba(226, 232, 240, 0.82);
+  cursor: pointer;
+  list-style: none;
+  padding: 7px 10px;
+}
+
+.um-assignment-deadline-control summary::-webkit-details-marker {
+  display: none;
+}
+
+.um-assignment-deadline-control summary strong {
+  color: #f8fafc;
+  font-size: 12px;
+}
+
+.um-assignment-deadline-control[data-has-candidates="true"] summary strong {
+  color: #fde68a;
+}
+
+.um-assignment-deadline-candidates {
+  display: grid;
+  gap: 7px;
+  border-top: 1px solid rgba(251, 191, 36, 0.2);
+  background: rgba(120, 53, 15, 0.14);
+  padding: 9px 10px;
+}
+
+.um-assignment-deadline-candidates > strong {
+  color: #fde68a;
+  font-size: 11px;
+}
+
+.um-assignment-deadline-candidate {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 10px;
+  border: 1px solid rgba(251, 191, 36, 0.2);
+  border-radius: 7px;
+  background: rgba(2, 6, 23, 0.2);
+  padding: 8px;
+}
+
+.um-assignment-deadline-candidate > div:first-child {
+  display: grid;
+  gap: 3px;
+  min-width: 0;
+}
+
+.um-assignment-deadline-candidate strong {
+  color: #f8fafc;
+  font-size: 12px;
+}
+
+.um-assignment-deadline-candidate small {
+  overflow: hidden;
+  color: rgba(226, 232, 240, 0.72);
+  font-size: 10px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.um-assignment-deadline-candidate .um-assignment-deadline-assumption {
+  color: #fde68a;
+}
+
+.um-assignment-deadline-candidate > div:last-child {
+  display: flex;
+  gap: 6px;
+}
+
+.um-assignment-deadline-candidate button {
+  min-height: 30px;
+  border: 1px solid rgba(251, 191, 36, 0.26);
+  border-radius: 7px;
+  background: rgba(120, 53, 15, 0.34);
+  color: #fef3c7;
+  cursor: pointer;
+  font: inherit;
+  font-size: 11px;
+  font-weight: 850;
+  padding: 4px 9px;
+}
+
+.um-assignment-deadline-fields {
+  display: grid;
+  grid-template-columns: minmax(160px, 1fr) minmax(140px, 0.8fr) auto;
+  align-items: end;
+  gap: 10px;
+  border-top: 1px solid rgba(148, 163, 184, 0.14);
+  padding: 10px;
+}
+
+.um-assignment-deadline-fields label {
+  display: grid;
+  gap: 5px;
+  color: rgba(226, 232, 240, 0.76);
+  font-size: 11px;
+}
+
+.um-assignment-deadline-fields input {
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 34px;
+  border: 1px solid rgba(148, 163, 184, 0.28);
+  border-radius: 7px;
+  background: rgba(248, 250, 252, 0.96);
+  color: #0f172a;
+  font: 700 13px/1.2 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  padding: 5px 8px;
+}
+
+.um-assignment-date-picker-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 7px;
+}
+
+.um-assignment-date-picker-row > input[type="date"]::-webkit-calendar-picker-indicator {
+  width: 0;
+  margin: 0;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.um-assignment-calendar-trigger {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 34px;
+  border: 1px solid rgba(125, 211, 252, 0.24);
+  border-radius: 7px;
+  background: rgba(14, 116, 144, 0.34);
+  color: #e0f2fe;
+  cursor: pointer;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 850;
+  padding: 5px 10px;
+  white-space: nowrap;
+}
+
+.um-assignment-calendar-trigger > input[type="date"] {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  border: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.um-assignment-calendar-trigger > input[type="date"]::-webkit-calendar-picker-indicator {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  cursor: pointer;
+}
+
+.um-assignment-deadline-actions {
+  display: flex;
+  gap: 7px;
+}
+
+.um-assignment-deadline-actions button {
+  min-height: 34px;
+  border: 1px solid rgba(125, 211, 252, 0.24);
+  border-radius: 7px;
+  background: rgba(14, 116, 144, 0.34);
+  color: #e0f2fe;
+  cursor: pointer;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 850;
+  padding: 5px 10px;
+  white-space: nowrap;
+}
+
+.um-assignment-deadline-actions button:disabled {
+  cursor: default;
+  opacity: 0.45;
+}
+
+.um-assignment-status-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+  padding-top: 2px;
+}
+
+.um-assignment-manual-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  min-width: min(420px, 72vw);
+  padding: 8px 0 0;
+}
+
+.um-assignment-manual-details {
+  position: relative;
+}
+
+.um-assignment-manual-details summary {
+  display: inline-flex;
+  align-items: center;
+  min-height: 30px;
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  border-radius: 8px;
+  background: rgba(15, 23, 42, 0.38);
+  color: #e2e8f0;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 850;
+  list-style: none;
+  padding: 5px 10px;
+}
+
+.um-assignment-manual-details summary::-webkit-details-marker {
+  display: none;
+}
+
+.um-assignment-manual-details[open] {
+  flex-basis: 100%;
+  order: 10;
+}
+
+.um-assignment-status-actions button {
+  min-height: 30px;
+  border: 1px solid rgba(125, 211, 252, 0.24);
+  border-radius: 8px;
+  background: rgba(14, 116, 144, 0.34);
+  color: #e0f2fe;
+  cursor: pointer;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 850;
+  padding: 5px 10px;
+}
+
+.um-assignment-status-actions .um-assignment-action-primary {
+  border-color: rgba(96, 165, 250, 0.36);
+  background: rgba(37, 99, 235, 0.42);
+  color: #dbeafe;
+}
+
+.um-assignment-status-actions .um-assignment-dev-button {
+  border-color: rgba(251, 191, 36, 0.34);
+  background: rgba(120, 53, 15, 0.38);
+  color: #fde68a;
+}
+
+@media (max-width: 720px) {
+  .um-assignment-deadline-candidate {
+    grid-template-columns: 1fr;
+  }
+
+  .um-assignment-deadline-fields {
+    grid-template-columns: 1fr;
+  }
+
+  .um-assignment-status-actions {
+    justify-content: flex-start;
+  }
+
+  .um-assignment-status-actions button,
+  .um-assignment-manual-details summary {
+    flex: 1 1 auto;
+  }
+
+  .um-assignment-manual-actions {
+    min-width: 0;
+  }
+}
+
+.um-ai-panel {
+  position: relative;
+  overflow: hidden;
+  box-sizing: border-box;
+  display: grid;
+  gap: 12px;
+  margin: 12px 0 16px;
+  border: 1px solid rgba(125, 211, 252, 0.2);
+  border-radius: 8px;
+  background: rgba(2, 6, 23, 0.46);
+  backdrop-filter: blur(8px) saturate(112%);
+  -webkit-backdrop-filter: blur(8px) saturate(112%);
+  color: #f8fafc;
+  box-shadow: 0 18px 42px rgba(2, 6, 23, 0.18);
+  padding: 16px;
+  font: 500 13px/1.45 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+.um-ai-panel .um-panel-header strong {
+  display: block;
+  margin-top: 1px;
+  color: #ffffff;
+  font-size: 18px;
+  font-weight: 850;
+  line-height: 1.15;
+}
+
+.um-ai-kicker {
+  display: block;
+  color: #7dd3fc;
+  font-size: 11px;
+  font-weight: 850;
+  letter-spacing: 0.12em;
+}
+
+.um-ai-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.um-ai-panel button {
+  min-height: 34px;
+  border: 1px solid rgba(125, 211, 252, 0.28);
+  border-radius: 8px;
+  background: rgba(14, 116, 144, 0.46);
+  color: #ffffff;
+  backdrop-filter: blur(14px);
+  cursor: pointer;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 800;
+  padding: 7px 12px;
+}
+
+.um-ai-panel button:disabled {
+  cursor: wait;
+  opacity: 0.55;
+}
+
+.um-ai-panel button[hidden] {
+  display: none;
+}
+
+.um-ai-panel[data-um-ai-busy="true"] .um-ai-status::after {
+  display: inline-block;
+  width: 1.4em;
+  content: "...";
+  animation: um-ai-pulse 1s steps(3, end) infinite;
+}
+
+@keyframes um-ai-pulse {
+  0% {
+    opacity: 0.3;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.3;
+  }
+}
+
+.um-ai-status {
+  margin: 0;
+  color: rgba(248, 250, 252, 0.9);
+  font-size: 12px;
+  font-weight: 750;
+}
+
+.um-ai-status.error {
+  color: #fecaca;
+}
+
+.um-ai-state {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  color: rgba(226, 232, 240, 0.82);
+  font-size: 12px;
+  font-weight: 750;
+}
+
+.um-ai-state-badge {
+  display: inline-flex;
+  align-items: center;
+  min-height: 22px;
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  border-radius: 999px;
+  background: rgba(15, 23, 42, 0.34);
+  color: #dbeafe;
+  font-size: 11px;
+  font-weight: 900;
+  line-height: 1;
+  padding: 4px 9px;
+}
+
+.um-ai-state[data-state="cached"] .um-ai-state-badge {
+  border-color: rgba(34, 197, 94, 0.22);
+  background: rgba(22, 101, 52, 0.3);
+  color: #bbf7d0;
+}
+
+.um-ai-state[data-state="missing-key"] .um-ai-state-badge {
+  border-color: rgba(251, 191, 36, 0.24);
+  background: rgba(120, 53, 15, 0.32);
+  color: #fde68a;
+}
+
+.um-ai-token-indicator {
+  margin: 0;
+  border: 1px solid rgba(148, 163, 184, 0.18);
+  border-radius: 8px;
+  background: rgba(15, 23, 42, 0.32);
+  color: rgba(226, 232, 240, 0.82);
+  font-size: 12px;
+  font-weight: 800;
+  padding: 8px 10px;
+}
+
+.um-ai-token-indicator[data-state="ok"] {
+  border-color: rgba(34, 197, 94, 0.2);
+  background: rgba(22, 101, 52, 0.24);
+  color: #bbf7d0;
+}
+
+.um-ai-token-indicator[data-state="warn"] {
+  border-color: rgba(251, 191, 36, 0.24);
+  background: rgba(120, 53, 15, 0.28);
+  color: #fde68a;
+}
+
+.um-ai-token-indicator[data-state="danger"] {
+  border-color: rgba(248, 113, 113, 0.28);
+  background: rgba(127, 29, 29, 0.34);
+  color: #fecaca;
+}
+
+.um-ai-cache-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid rgba(125, 211, 252, 0.18);
+  border-radius: 8px;
+  background: rgba(15, 23, 42, 0.38);
+  padding: 8px;
+}
+
+.um-ai-cache-row[hidden] {
+  display: none;
+}
+
+.um-ai-cache-text {
+  flex: 1 1 240px;
+  color: rgba(224, 242, 254, 0.92);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.um-ai-cache-row button {
+  min-height: 28px;
+  border-color: rgba(255, 255, 255, 0.18);
+  background: rgba(15, 23, 42, 0.34);
+  font-size: 12px;
+  padding: 5px 9px;
+}
+
+.um-ai-meta {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 8px;
+  color: rgba(226, 232, 240, 0.78);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.um-ai-output {
+  overflow: auto;
+  max-height: min(560px, 68vh);
+  margin: 0;
+  border: 1px solid rgba(125, 211, 252, 0.2);
+  border-radius: 8px;
+  background: rgba(2, 6, 23, 0.56);
+  color: #f8fafc;
+  font: 600 14px/1.75 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  padding: 18px 20px;
+}
+
+.um-ai-output h2,
+.um-ai-output h3,
+.um-ai-output h4 {
+  margin: 18px 0 8px;
+  color: #ffffff;
+  font-weight: 850;
+  line-height: 1.28;
+}
+
+.um-ai-output h2:first-child,
+.um-ai-output h3:first-child,
+.um-ai-output h4:first-child {
+  margin-top: 0;
+}
+
+.um-ai-output h2 {
+  border-bottom: 1px solid rgba(125, 211, 252, 0.2);
+  font-size: 20px;
+  padding-bottom: 7px;
+}
+
+.um-ai-output h3 {
+  font-size: 17px;
+}
+
+.um-ai-output h4 {
+  font-size: 15px;
+}
+
+.um-ai-output p {
+  margin: 7px 0 11px;
+}
+
+.um-ai-output ul,
+.um-ai-output ol {
+  display: grid;
+  gap: 7px;
+  margin: 8px 0 14px;
+  padding-left: 24px;
+}
+
+.um-ai-output li {
+  padding-left: 2px;
+}
+
+.um-ai-output strong {
+  color: #bae6fd;
+  font-weight: 900;
+}
+
+.um-ai-output code {
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 5px;
+  background: rgba(2, 6, 23, 0.45);
+  color: #bfdbfe;
+  font: 750 0.92em/1.4 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  padding: 1px 5px;
+}
+
+.um-ai-output-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.um-ai-output-actions[hidden] {
+  display: none;
+}
+
+.um-ai-output-actions button {
+  min-height: 30px;
+  border-color: rgba(255, 255, 255, 0.18);
+  background: rgba(15, 23, 42, 0.34);
+  font-size: 12px;
+  padding: 5px 10px;
+}
+
+.um-ace-panel,
+.um-upcoming-panel,
+.um-settings-link-panel {
+  box-sizing: border-box;
+  margin: 12px;
+  border: 1px solid rgba(37, 99, 235, 0.18);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.96);
+  color: #0f172a;
+  box-shadow: 0 10px 28px rgba(15, 23, 42, 0.08);
+  padding: 12px;
+  font: 500 13px/1.45 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+.um-ace-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.um-ace-button {
+  min-height: 32px;
+  border: 1px solid #cbd5e1;
+  border-radius: 7px;
+  background: #ffffff;
+  color: #0f172a;
+  cursor: pointer;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 5px 9px;
+}
+
+.um-upcoming-panel ul {
+  display: grid;
+  gap: 5px;
+  margin: 8px 0 0;
+  padding-left: 18px;
+}
+
+.um-assignment-overview-panel {
+  position: relative;
+  z-index: 5;
+  box-sizing: border-box;
+  display: grid;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  container-type: inline-size;
+  container-name: um-assignment-overview;
+  gap: 12px;
+  margin: 8px 0 12px;
+  border: 1px solid rgba(125, 211, 252, 0.22);
+  border-radius: 8px;
+  background: rgba(2, 6, 23, 0.42);
+  color: #f8fafc;
+  box-shadow: 0 14px 34px rgba(2, 6, 23, 0.16);
+  padding: 10px;
+  backdrop-filter: blur(8px) saturate(112%);
+  -webkit-backdrop-filter: blur(8px) saturate(112%);
+  font: 500 13px/1.45 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+.um-assignment-overview-header {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.um-assignment-overview-header > div {
+  display: grid;
+  gap: 2px;
+}
+
+.um-assignment-overview-header span:first-child {
+  color: #7dd3fc;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0;
+}
+
+.um-assignment-overview-header strong {
+  font-size: 18px;
+}
+
+.um-assignment-overview-summary {
+  color: #cbd5e1;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.um-assignment-overview-list {
+  display: grid;
+  gap: 8px;
+}
+
+.um-assignment-overview-item {
+  box-sizing: border-box;
+  display: grid;
+  min-width: 0;
+  border: 1px solid rgba(148, 163, 184, 0.24);
+  border-left: 4px solid #38bdf8;
+  border-radius: 7px;
+  background: rgba(15, 23, 42, 0.34);
+  color: #f8fafc;
+}
+
+.um-assignment-overview-item:hover,
+.um-assignment-overview-item:focus-within {
+  border-color: rgba(125, 211, 252, 0.7);
+  background: rgba(30, 41, 59, 0.5);
+}
+
+.um-assignment-overview-row {
+  display: grid;
+  grid-template-columns: minmax(180px, 1fr) minmax(420px, 2.2fr) 44px;
+  align-items: center;
+  gap: 16px;
+  min-width: 0;
+  padding: 10px 12px;
+}
+
+.um-assignment-overview-item[data-tone="overdue"] {
+  border-left-color: #fb7185;
+}
+
+.um-assignment-overview-item[data-tone="today"] {
+  border-left-color: #fbbf24;
+}
+
+.um-assignment-overview-item[data-tone="soon"] {
+  border-left-color: #38bdf8;
+}
+
+.um-assignment-overview-item[data-tone="complete"] {
+  border-left-color: #4ade80;
+}
+
+.um-assignment-overview-identity {
+  display: grid;
+  min-width: 0;
+  gap: 2px;
+}
+
+.um-assignment-overview-identity > span {
+  overflow: hidden;
+  color: #cbd5e1;
+  font-size: 11px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.um-assignment-overview-identity > strong {
+  overflow: hidden;
+  color: #ffffff;
+  font-size: 15px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.um-assignment-overview-stats {
+  display: grid;
+  align-items: center;
+  gap: 8px;
+}
+
+.um-assignment-overview-stats[data-columns="3"] {
+  grid-template-columns: minmax(72px, 0.55fr) minmax(72px, 0.55fr) minmax(210px, 1.8fr);
+}
+
+.um-assignment-overview-stats[data-columns="4"] {
+  grid-template-columns: minmax(72px, 0.55fr) minmax(72px, 0.55fr) minmax(88px, 0.7fr) minmax(210px, 1.8fr);
+}
+
+.um-assignment-overview-stat {
+  display: grid;
+  min-width: 0;
+  gap: 2px;
+}
+
+.um-assignment-overview-stat > span {
+  color: #cbd5e1;
+  font-size: 10px;
+}
+
+.um-assignment-overview-stat > strong {
+  overflow: hidden;
+  color: #f8fafc;
+  font-size: 13px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.um-assignment-overview-toggle {
+  width: 44px;
+  height: 44px;
+  border: 1px solid rgba(125, 211, 252, 0.28);
+  border-radius: 7px;
+  background: rgba(15, 23, 42, 0.38);
+  color: #e0f2fe;
+  cursor: pointer;
+  font: 800 12px/1 system-ui, sans-serif;
+}
+
+.um-assignment-overview-toggle:hover,
+.um-assignment-overview-toggle:focus-visible {
+  border-color: rgba(125, 211, 252, 0.72);
+  background: rgba(14, 116, 144, 0.3);
+  outline: 2px solid rgba(125, 211, 252, 0.28);
+  outline-offset: 2px;
+}
+
+.um-assignment-overview-toggle[hidden],
+.um-assignment-overview-details[hidden] {
+  display: none;
+}
+
+.um-assignment-overview-details {
+  display: grid;
+  border-top: 1px solid rgba(148, 163, 184, 0.18);
+  padding: 0 12px;
+}
+
+.um-assignment-overview-detail {
+  display: grid;
+  grid-template-columns: minmax(180px, 1.5fr) minmax(88px, 0.55fr) minmax(210px, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.12);
+  padding: 9px 0;
+}
+
+.um-assignment-overview-detail:last-child {
+  border-bottom: 0;
+}
+
+.um-assignment-overview-detail-title,
+.um-assignment-overview-detail-deadline {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.um-assignment-overview-detail-title {
+  color: #f8fafc;
+  font-size: 12px;
+}
+
+.um-assignment-overview-detail-status {
+  justify-self: start;
+  border: 1px solid rgba(251, 191, 36, 0.25);
+  border-radius: 999px;
+  background: rgba(120, 53, 15, 0.3);
+  color: #fde68a;
+  font-size: 10px;
+  font-weight: 800;
+  padding: 3px 7px;
+  white-space: nowrap;
+}
+
+.um-assignment-overview-detail[data-status="unchecked"] .um-assignment-overview-detail-status,
+.um-assignment-overview-detail[data-status="unknown"] .um-assignment-overview-detail-status {
+  border-color: rgba(196, 181, 253, 0.28);
+  background: rgba(76, 29, 149, 0.3);
+  color: #ddd6fe;
+}
+
+.um-assignment-overview-detail[data-status="unpublished"] .um-assignment-overview-detail-status {
+  border-color: rgba(148, 163, 184, 0.28);
+  background: rgba(51, 65, 85, 0.38);
+  color: #cbd5e1;
+}
+
+.um-assignment-overview-detail-deadline {
+  color: #cbd5e1;
+  font-size: 11px;
+}
+
+.um-assignment-overview-detail[data-tone="overdue"] .um-assignment-overview-detail-deadline {
+  color: #fda4af;
+  font-weight: 800;
+}
+
+.um-assignment-overview-detail[data-tone="today"] .um-assignment-overview-detail-deadline {
+  color: #fde68a;
+  font-weight: 800;
+}
+
+.um-assignment-overview-open {
+  min-width: 52px;
+  min-height: 32px;
+  border: 1px solid rgba(125, 211, 252, 0.3);
+  border-radius: 7px;
+  background: rgba(14, 116, 144, 0.28);
+  color: #e0f2fe !important;
+  font-size: 11px;
+  font-weight: 800;
+  line-height: 32px;
+  text-align: center;
+  text-decoration: none !important;
+}
+
+.um-assignment-overview-open:hover,
+.um-assignment-overview-open:focus-visible {
+  border-color: rgba(125, 211, 252, 0.76);
+  background: rgba(14, 116, 144, 0.48);
+  outline: 2px solid rgba(125, 211, 252, 0.28);
+  outline-offset: 2px;
+}
+
+.um-assignment-overview-item[data-tone="overdue"] .um-assignment-overview-stat:last-child > strong {
+  color: #fda4af;
+}
+
+.um-assignment-overview-item[data-tone="today"] .um-assignment-overview-stat:last-child > strong {
+  color: #fde68a;
+}
+
+@media (max-width: 820px) {
+  .um-assignment-overview-panel {
+    gap: 10px;
+    padding: 8px;
+  }
+}
+
+@container um-assignment-overview (max-width: 820px) {
+  .um-assignment-overview-header {
+    align-items: start;
+    flex-wrap: wrap;
+    gap: 4px 10px;
+  }
+
+  .um-assignment-overview-row {
+    grid-template-columns: minmax(0, 1fr) 44px;
+    gap: 10px;
+    padding: 9px 8px;
+  }
+
+  .um-assignment-overview-identity {
+    grid-column: 1;
+  }
+
+  .um-assignment-overview-toggle {
+    grid-column: 2;
+    grid-row: 1;
+    width: 44px;
+    height: 44px;
+  }
+
+  .um-assignment-overview-stats {
+    grid-column: 1 / -1;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .um-assignment-overview-stats[data-columns] {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .um-assignment-overview-detail {
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 7px 10px;
+  }
+
+  .um-assignment-overview-details {
+    padding: 0 8px;
+  }
+
+  .um-assignment-overview-detail-title {
+    grid-column: 1 / -1;
+  }
+
+  .um-assignment-overview-detail-status {
+    grid-column: 1;
+    grid-row: 2;
+  }
+
+  .um-assignment-overview-detail-deadline {
+    grid-column: 1;
+    grid-row: 3;
+  }
+
+  .um-assignment-overview-open {
+    grid-column: 2;
+    grid-row: 2 / span 2;
+    align-self: center;
+    min-height: 44px;
+    line-height: 44px;
+  }
+}
+
+@container um-assignment-overview (max-width: 520px) {
+  .um-assignment-overview-header strong {
+    font-size: 16px;
+  }
+
+  .um-assignment-overview-summary {
+    width: 100%;
+  }
+
+  .um-assignment-overview-identity > span,
+  .um-assignment-overview-identity > strong,
+  .um-assignment-overview-stat > strong,
+  .um-assignment-overview-detail-title,
+  .um-assignment-overview-detail-deadline {
+    overflow: visible;
+    overflow-wrap: anywhere;
+    text-overflow: clip;
+    white-space: normal;
+  }
+
+  .um-assignment-overview-stats,
+  .um-assignment-overview-stats[data-columns] {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .um-assignment-overview-detail {
+    grid-template-columns: minmax(0, 1fr) 52px;
+  }
+}
+
+.um-settings-link-panel a,
+.um-settings-link-panel button {
+  min-height: 34px;
+  border: 1px solid rgba(37, 99, 235, 0.28) !important;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.94) !important;
+  color: #1d4ed8 !important;
+  box-shadow: 0 6px 18px rgba(15, 23, 42, 0.08);
+  cursor: pointer;
+  font: inherit;
+  font-weight: 800;
+  padding: 6px 10px;
+}
+
+.um-settings-link-panel button:hover,
+.um-settings-link-panel button:focus {
+  background: #eff6ff !important;
+  color: #1e40af !important;
+}
+
+/* Match the native MOOCs/Bootstrap surface when glassmorphism is disabled. */
+html[data-um-glassmorphism="false"] :is(
+  .um-memo-panel,
+  .um-external-links-panel,
+  .um-slide-tools,
+  .um-download-panel,
+  .um-ai-panel,
+  .um-lecture-tools,
+  .um-assignment-status-panel,
+  .um-assignment-overview-panel
+) {
+  border-color: #d2d6de;
+  background: #ffffff;
+  color: #333333;
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+html[data-um-glassmorphism="false"] :is(
+  .um-download-kicker,
+  .um-ai-kicker,
+  .um-lecture-tools-kicker,
+  .um-assignment-overview-header span:first-child
+) {
+  color: #3c8dbc;
+}
+
+html[data-um-glassmorphism="false"] :is(
+  .um-download-panel .um-panel-header strong,
+  .um-ai-panel .um-panel-header strong,
+  .um-lecture-tools-bar strong,
+  .um-assignment-status-main strong,
+  .um-assignment-deadline-control summary strong,
+  .um-assignment-deadline-candidate strong,
+  .um-assignment-overview-header strong,
+  .um-assignment-overview-identity > strong,
+  .um-assignment-overview-stat > strong,
+  .um-assignment-overview-detail-title,
+  .um-slide-text-header strong
+) {
+  color: #333333;
+}
+
+html[data-um-glassmorphism="false"] :is(
+  .um-download-status,
+  .um-download-counts,
+  .um-download-panel p,
+  .um-ai-status,
+  .um-ai-state,
+  .um-ai-meta,
+  .um-lecture-assignment-list-heading,
+  .um-assignment-status-panel p,
+  .um-assignment-status-panel small,
+  .um-assignment-deadline-control summary,
+  .um-assignment-deadline-fields label,
+  .um-assignment-overview-summary,
+  .um-assignment-overview-identity > span,
+  .um-assignment-overview-stat > span,
+  .um-assignment-overview-detail-deadline,
+  .um-slide-text-header span,
+  .um-slide-text-count,
+  .um-slide-text-status,
+  .um-slide-text-results
+) {
+  color: #64748b;
+}
+
+html[data-um-glassmorphism="false"] :is(
+  .um-download-panel button,
+  .um-ai-panel button,
+  .um-lecture-tools-tabs button,
+  .um-lecture-assignment-check button,
+  .um-assignment-status-actions button,
+  .um-assignment-manual-details summary,
+  .um-assignment-deadline-actions button,
+  .um-assignment-deadline-candidate button,
+  .um-assignment-calendar-trigger,
+  .um-assignment-overview-toggle
+) {
+  border-color: #b8c7ce;
+  background: #ffffff;
+  color: #333333;
+  box-shadow: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+html[data-um-glassmorphism="false"] :is(
+  .um-download-panel [data-um-download="course"],
+  .um-ai-panel button[data-um-ai-action="summarize"],
+  .um-lecture-tools-tabs button[aria-selected="true"],
+  .um-lecture-assignment-check button,
+  .um-assignment-status-actions .um-assignment-action-primary,
+  .um-assignment-overview-open
+) {
+  border-color: #367fa9;
+  background: #3c8dbc;
+  color: #ffffff !important;
+}
+
+html[data-um-glassmorphism="false"] :is(
+  .um-slide-text-tool,
+  .um-download-candidate-summary,
+  .um-ai-cache-row,
+  .um-ai-token-indicator,
+  .um-assignment-status-evidence,
+  .um-assignment-deadline-control,
+  .um-assignment-deadline-candidate
+) {
+  border-color: #e5e7eb;
+  background: #f8fafc;
+  color: #334155;
+}
+
+html[data-um-glassmorphism="false"] :is(
+  .um-slide-text-output,
+  .um-ai-output
+) {
+  border-color: #d2d6de;
+  background: #ffffff;
+  color: #333333;
+}
+
+html[data-um-glassmorphism="false"] .um-ai-output :is(h2, h3, h4) {
+  color: #222d32;
+}
+
+html[data-um-glassmorphism="false"] .um-ai-output strong {
+  color: #2563eb;
+}
+
+html[data-um-glassmorphism="false"] .um-ai-output code {
+  border-color: #dbe3e8;
+  background: #f3f4f6;
+  color: #1e3a8a;
+}
+
+html[data-um-glassmorphism="false"] .um-lecture-assignment-list,
+html[data-um-glassmorphism="false"] .um-lecture-tools-panes,
+html[data-um-glassmorphism="false"] .um-assignment-overview-details {
+  border-color: #e5e7eb;
+}
+
+html[data-um-glassmorphism="false"] :is(
+  .um-lecture-assignment-item,
+  .um-assignment-overview-item
+) {
+  border-color: #d2d6de;
+  background: #f9fafb;
+  color: #333333;
+}
+
+html[data-um-glassmorphism="false"] :is(
+  .um-lecture-assignment-item:hover,
+  .um-lecture-assignment-item:focus-visible,
+  .um-assignment-overview-item:hover,
+  .um-assignment-overview-item:focus-within
+) {
+  border-color: #3c8dbc;
+  background: #f4f8fb;
+  color: #222d32;
+}
+
+html[data-um-glassmorphism="false"] :is(
+  .um-lecture-assignment-title,
+  .um-lecture-assignment-chip,
+  .um-lecture-assignment-deadline,
+  .um-tool-tab-status,
+  .um-assignment-status-badge
+) {
+  color: #334155;
+}
+
+html[data-um-glassmorphism="false"] :is(
+  .um-lecture-assignment-meta,
+  .um-tool-tab-status
+) {
+  color: #64748b;
+}
+
+html[data-um-glassmorphism="false"] .um-lecture-tool-pane > :is(.um-download-panel, .um-ai-panel) {
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+html[data-um-glassmorphism="false"] .um-external-links-panel summary span:last-child {
+  background: #e0f2fe;
+  color: #0369a1;
+}
+
+html[data-um-glassmorphism="false"] .um-external-links-panel a {
+  color: #337ab7;
+}

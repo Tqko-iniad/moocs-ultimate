@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title desc">
+  <title id="title">MOOCs Ultimate</title>
+  <desc id="desc">A white U-shaped lecture page layered over cyan and blue pages with a bookmark.</desc>
+
+  <rect x="16" y="16" width="480" height="480" rx="104" fill="#061a4f"/>
+
+  <!-- Stacked lecture pages remain deliberately bold enough for 16px rendering. -->
+  <path
+    d="M78 194 118 204v132c0 65 39 101 118 111 60 8 109 1 145-20l-20 34c-43 23-105 29-171 16-74-15-112-58-112-129Z"
+    fill="#1768ff"
+  />
+  <path
+    d="M114 150 154 160v151c0 62 38 96 114 104 58 7 106-1 143-24l-20 37c-44 24-105 31-167 19-73-14-110-56-110-126Z"
+    fill="#16d8dc"
+  />
+
+  <!-- Main page: the outer and inner contours share one clean U silhouette. -->
+  <path
+    d="M158 92 232 108v194c0 43 19 66 56 66s56-23 56-66V108l74-16v210c0 107-49 151-130 151s-130-44-130-151Z"
+    fill="#fff"
+  />
+
+  <path d="M350 107 390 98v69l-20-14-20 14Z" fill="#16d8dc"/>
+</svg>

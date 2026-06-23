@@ -1,0 +1,28 @@
+{
+  "name": "moocs-ultimate",
+  "version": "0.1.0-alpha.1",
+  "private": true,
+  "description": "Personal Manifest V3 browser extension for INIAD MOOCs.",
+  "packageManager": "pnpm@10.30.2",
+  "type": "module",
+  "scripts": {
+    "build:chromium": "node scripts/build-extension.mjs chromium",
+    "build": "pnpm run build:chromium",
+    "lint": "node scripts/check.mjs",
+    "release:check": "node scripts/release-check.mjs"
+  },
+  "engines": {
+    "node": ">=20.19.0"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "esbuild"
+    ],
+    "overrides": {
+      "esbuild": "0.28.1"
+    }
+  },
+  "devDependencies": {
+    "vite": "7.3.5"
+  }
+}
