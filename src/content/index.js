@@ -22,6 +22,7 @@ import {
 } from '../shared/storage.js';
 import { extractDeadlineCandidatesFromLines } from '../shared/deadlineCandidates.js';
 import { isAttendanceFieldInstruction, isPreviousAttendanceTitle } from '../shared/attendanceDetection.js';
+import { createExternalLinkEntry, dedupeExternalLinkEntries } from '../shared/externalLinks.js';
 import {
   compareAssignmentDeadlineUrgency,
   dedupeAssignmentRecords,
@@ -5272,19 +5273,28 @@ async function ensureMemoPanel() {
 }
 
 function getExternalLinks() {
-  const currentHost = location.host;
-  return [...document.querySelectorAll('a[href]')]
-    .map((link) => {
-      try {
-        const url = new URL(link.href, location.href);
-        return { url, label: link.textContent?.trim() || url.hostname };
-      } catch {
-        return null;
-      }
-    })
-    .filter((entry) => entry && /^https?:$/.test(entry.url.protocol) && entry.url.host !== currentHost)
-    .filter((entry, index, entries) => entries.findIndex((candidate) => candidate.url.href === entry.url.href) === index)
-    .slice(0, 20);
+  const entries = [];
+  for (const link of document.querySelectorAll('a[href]')) {
+    if (
+      isExtensionUiNode(link) ||
+      link.closest('[hidden], [aria-hidden="true"]')
+    ) {
+      continue;
+    }
+    const entry = createExternalLinkEntry({
+      href: link.getAttribute('href') || link.href,
+      baseHref: location.href,
+      currentOrigin: location.origin,
+      labels: [
+        link.textContent,
+        link.getAttribute('aria-label'),
+        link.getAttribute('title'),
+        link.querySelector('img[alt]')?.getAttribute('alt'),
+      ],
+    });
+    if (entry) entries.push(entry);
+  }
+  return dedupeExternalLinkEntries(entries, 20);
 }
 
 function ensureExternalLinksPanel() {
@@ -5314,10 +5324,16 @@ function ensureExternalLinksPanel() {
   for (const entry of links) {
     const item = document.createElement('li');
     const anchor = document.createElement('a');
-    anchor.href = entry.url.href;
+    anchor.href = entry.href;
     anchor.target = '_blank';
-    anchor.rel = 'noreferrer';
-    anchor.textContent = entry.label;
+    anchor.rel = 'noopener noreferrer';
+    const linkLabel = document.createElement('span');
+    linkLabel.className = 'um-external-link-label';
+    linkLabel.textContent = entry.label;
+    const linkHost = document.createElement('span');
+    linkHost.className = 'um-external-link-host';
+    linkHost.textContent = entry.hostname;
+    anchor.append(linkLabel, linkHost);
     item.append(anchor);
     list.append(item);
   }
@@ -5327,7 +5343,7 @@ function ensureExternalLinksPanel() {
   const summary = document.createElement('summary');
   const label = document.createElement('span');
   const count = document.createElement('span');
-  label.textContent = 'External links';
+  label.textContent = '外部リンク';
   count.textContent = String(links.length);
   summary.append(label, count);
   details.append(summary, list);

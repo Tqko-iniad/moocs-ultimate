@@ -285,11 +285,35 @@
 }
 
 .um-external-links-panel a {
-  display: block;
-  overflow: hidden;
+  display: grid;
+  gap: 1px;
+  min-width: 0;
+  padding: 3px 4px;
+  border-radius: 5px;
   color: #bae6fd;
+  text-decoration: none;
+}
+
+.um-external-links-panel a:hover,
+.um-external-links-panel a:focus-visible {
+  background: rgba(14, 165, 233, 0.14);
+}
+
+.um-external-link-label,
+.um-external-link-host {
+  overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.um-external-link-label {
+  font-weight: 750;
+}
+
+.um-external-link-host {
+  color: rgba(224, 242, 254, 0.7);
+  font-size: 10px;
+  font-weight: 600;
 }
 
 .um-drive-button {
@@ -2534,4 +2558,8 @@ html[data-um-glassmorphism="false"] .um-external-links-panel summary span:last-c
 
 html[data-um-glassmorphism="false"] .um-external-links-panel a {
   color: #337ab7;
+}
+
+html[data-um-glassmorphism="false"] .um-external-link-host {
+  color: #64748b;
 }

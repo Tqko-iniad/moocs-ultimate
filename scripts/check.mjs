@@ -2,6 +2,7 @@ import { access, readFile } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { extractDeadlineCandidatesFromLines } from '../src/shared/deadlineCandidates.js';
+import { createExternalLinkEntry, dedupeExternalLinkEntries } from '../src/shared/externalLinks.js';
 import { isAttendanceFieldInstruction, isPreviousAttendanceTitle } from '../src/shared/attendanceDetection.js';
 import { validateAndNormalizeSettings } from '../src/shared/defaultSettings.js';
 import {
@@ -38,6 +39,7 @@ const requiredFiles = [
   'src/shared/attendanceDetection.js',
   'src/shared/assignmentDeadline.js',
   'src/shared/deadlineCandidates.js',
+  'src/shared/externalLinks.js',
   'src/shared/storage.js',
   'src/shared/messages.js',
   'scripts/build-extension.mjs',
@@ -99,6 +101,42 @@ if (!isAttendanceFieldInstruction('講義を受講している教室・座席番
 }
 if (isAttendanceFieldInstruction('レポート本文を入力してください')) {
   throw new Error('Ordinary assignment input must not be treated as attendance.');
+}
+
+const externalLink = createExternalLinkEntry({
+  href: 'https://drive.google.com/drive/search?q=course#result',
+  baseHref: 'https://moocs.iniad.org/courses',
+  currentOrigin: 'https://moocs.iniad.org',
+  labels: ['ドライブで探す'],
+});
+if (
+  !externalLink ||
+  externalLink.href !== 'https://drive.google.com/drive/search?q=course' ||
+  externalLink.hostname !== 'drive.google.com'
+) {
+  throw new Error('External link normalization failed.');
+}
+if (
+  createExternalLinkEntry({
+    href: '/courses/2026/COT101',
+    baseHref: 'https://moocs.iniad.org/courses',
+    currentOrigin: 'https://moocs.iniad.org',
+  }) !== null
+) {
+  throw new Error('Internal MOOCs links must not be external link candidates.');
+}
+const dedupedExternalLinks = dedupeExternalLinkEntries([
+  externalLink,
+  { ...externalLink, label: 'duplicate' },
+  createExternalLinkEntry({
+    href: 'https://app.slack.com/client/example',
+    baseHref: 'https://moocs.iniad.org/courses',
+    currentOrigin: 'https://moocs.iniad.org',
+    labels: ['Slack'],
+  }),
+]);
+if (dedupedExternalLinks.length !== 2) {
+  throw new Error('External link deduplication failed.');
 }
 
 const deadlineNow = Date.parse('2026-06-22T12:00:00+09:00');
@@ -307,6 +345,13 @@ if (
 }
 if (!contentSource.includes('const hasBackground = glassEnabled && Boolean(')) {
   throw new Error('Background customization must be disabled when glassmorphism is OFF.');
+}
+if (
+  !contentSource.includes('isExtensionUiNode(link)') ||
+  !contentSource.includes("linkHost.className = 'um-external-link-host'") ||
+  !contentSource.includes("label.textContent = '外部リンク'")
+) {
+  throw new Error('External links must exclude extension-owned UI and show destination hosts.');
 }
 if (contentSource.includes('html[data-um-glassmorphism="false"] .content-wrapper')) {
   throw new Error('Glassmorphism OFF must preserve the native MOOCs page background.');
