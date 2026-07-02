@@ -46,3 +46,34 @@ export function dedupeExternalLinkEntries(entries, limit = 20) {
   }
   return result;
 }
+
+export function collectExternalLinksFromDocument(doc, options = {}) {
+  const {
+    baseHref = '',
+    currentOrigin = '',
+    isOwnedNode = () => false,
+    limit = 20,
+  } = options;
+  const entries = [];
+  for (const link of doc.querySelectorAll('a[href]')) {
+    if (
+      isOwnedNode(link) ||
+      link.closest('[hidden], [aria-hidden="true"]')
+    ) {
+      continue;
+    }
+    const entry = createExternalLinkEntry({
+      href: link.getAttribute('href') || link.href,
+      baseHref,
+      currentOrigin,
+      labels: [
+        link.textContent,
+        link.getAttribute('aria-label'),
+        link.getAttribute('title'),
+        link.querySelector('img[alt]')?.getAttribute('alt'),
+      ],
+    });
+    if (entry) entries.push(entry);
+  }
+  return dedupeExternalLinkEntries(entries, limit);
+}

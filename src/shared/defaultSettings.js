@@ -87,7 +87,12 @@ export const SETTING_DEFINITIONS = Object.freeze([
     title: 'Appearance',
     fields: [
       { path: 'appearance.enableGlassmorphism', label: 'Glassmorphism', type: 'checkbox' },
-      { path: 'appearance.backgroundImageUrl', label: 'Background image URL', type: 'text' },
+      {
+        path: 'appearance.backgroundImageUrl',
+        label: 'Background image URL',
+        type: 'text',
+        format: 'optionalHttpsUrl',
+      },
       { path: 'appearance.backgroundColor', label: 'Background color', type: 'color' },
       {
         path: 'appearance.contentOpacity',
@@ -248,7 +253,7 @@ export const SETTING_DEFINITIONS = Object.freeze([
         type: 'select',
         options: ['iniad-ai-mop'],
       },
-      { path: 'ai.apiBaseUrl', label: 'API base URL', type: 'text' },
+      { path: 'ai.apiBaseUrl', label: 'API base URL', type: 'text', format: 'iniadAiApiBaseUrl' },
       { path: 'ai.apiKey', label: 'API key', type: 'password' },
       {
         path: 'ai.model',
@@ -319,6 +324,48 @@ export function setValueByPath(target, path, value) {
   parent[lastKey] = value;
 }
 
+const HEX_COLOR_PATTERN = /^#(?:[0-9a-f]{3}|[0-9a-f]{6})$/i;
+
+function normalizeFormattedString(field, value, errors) {
+  const text = value.trim();
+
+  if (field.type === 'color') {
+    if (!HEX_COLOR_PATTERN.test(text)) {
+      errors.push(`${field.path} は #rgb または #rrggbb 形式の色である必要があります。`);
+      return null;
+    }
+    return text.toLowerCase();
+  }
+
+  if (field.format === 'optionalHttpsUrl') {
+    if (!text) return '';
+    try {
+      const url = new URL(text);
+      if (url.protocol !== 'https:') throw new Error('unsupported protocol');
+      return url.href;
+    } catch {
+      errors.push(`${field.path} は https URL または空文字である必要があります。`);
+      return null;
+    }
+  }
+
+  if (field.format === 'iniadAiApiBaseUrl') {
+    try {
+      const url = new URL(text || DEFAULT_SETTINGS.ai.apiBaseUrl);
+      if (url.protocol !== 'https:' || url.hostname !== 'api.openai.iniad.org') {
+        throw new Error('unsupported AI API host');
+      }
+      url.pathname = url.pathname.replace(/\/+$/g, '');
+      return url.toString().replace(/\/+$/g, '');
+    } catch {
+      errors.push(`${field.path} は https://api.openai.iniad.org/ 配下のURLである必要があります。`);
+      return null;
+    }
+  }
+
+  return value;
+}
+
 export function validateAndNormalizeSettings(candidate) {
   const normalized = cloneDefaultSettings();
   const errors = [];
@@ -343,6 +390,13 @@ export function validateAndNormalizeSettings(candidate) {
 
       if ((field.type === 'text' || field.type === 'password' || field.type === 'color') && typeof value !== 'string') {
         errors.push(`${field.path} は string である必要があります。`);
+        continue;
+      }
+
+      if (field.type === 'text' || field.type === 'password' || field.type === 'color') {
+        const normalizedString = normalizeFormattedString(field, value, errors);
+        if (normalizedString === null) continue;
+        setValueByPath(normalized, field.path, normalizedString);
         continue;
       }
 

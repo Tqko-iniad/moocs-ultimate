@@ -46,13 +46,13 @@ const PDF_PAGE_WIDTH = 960;
 const PDF_PAGE_HEIGHT = 540;
 const AI_CACHE_VERSION = 2;
 
-function estimateTokens(text) {
+function estimateTokenCountFromText(text) {
   const normalized = String(text || '').trim();
   if (!normalized) return 0;
   return Math.ceil(normalized.length / 2.5);
 }
 
-function hashText(text) {
+function hashTextFnv1aHex(text) {
   let hash = 2166136261;
   for (let index = 0; index < text.length; index += 1) {
     hash ^= text.charCodeAt(index);
@@ -61,7 +61,7 @@ function hashText(text) {
   return (hash >>> 0).toString(16).padStart(8, '0');
 }
 
-function normalizeAiBaseUrl(value) {
+function normalizeIniadAiBaseUrl(value) {
   const fallback = 'https://api.openai.iniad.org/api/v1';
   try {
     const url = new URL(String(value || fallback));
@@ -75,7 +75,7 @@ function normalizeAiBaseUrl(value) {
   }
 }
 
-function buildAiSystemPrompt(mode) {
+function buildAiSummarySystemPrompt(mode) {
   const detail =
     mode === 'brief'
       ? '短時間で復習できるよう、結論、重要語句、3行まとめを中心に短くまとめてください。'
@@ -104,29 +104,29 @@ function buildAiSystemPrompt(mode) {
   ].join('\n');
 }
 
-function getMinimumAiOutputTokens(mode) {
+function getMinimumSummaryOutputTokens(mode) {
   if (mode === 'brief') return 1600;
   if (mode === 'detailed') return 3600;
   return 2600;
 }
 
-function getEffectiveAiOutputTokens(aiSettings, mode) {
+function getEffectiveSummaryOutputTokens(aiSettings, mode) {
   const configured = Number(aiSettings.maxOutputTokens || 0);
-  return Math.min(8192, Math.max(getMinimumAiOutputTokens(mode), configured || 0));
+  return Math.min(8192, Math.max(getMinimumSummaryOutputTokens(mode), configured || 0));
 }
 
-function buildAiCacheKey({ sourceUrl, title, text, model, summaryMode }) {
+function buildAiSummaryCacheKey({ sourceUrl, title, text, model, summaryMode }) {
   return [
     `v${AI_CACHE_VERSION}`,
     model || '',
     summaryMode || '',
-    hashText(sourceUrl || ''),
-    hashText(title || ''),
-    hashText(text || ''),
+    hashTextFnv1aHex(sourceUrl || ''),
+    hashTextFnv1aHex(title || ''),
+    hashTextFnv1aHex(text || ''),
   ].join(':');
 }
 
-function normalizeAiSourceUrl(value) {
+function normalizeAiSummarySourceUrl(value) {
   try {
     const url = new URL(String(value || ''));
     url.hash = '';
@@ -143,7 +143,7 @@ function normalizeAiSourceUrl(value) {
   }
 }
 
-function parseAiMoocsRoute(value) {
+function parseMoocsRouteForAiSummary(value) {
   try {
     const url = new URL(String(value || ''));
     if (url.hostname !== 'moocs.iniad.org') return null;
@@ -160,14 +160,14 @@ function parseAiMoocsRoute(value) {
   }
 }
 
-function isSameAiSource(itemSourceUrl, requestedSourceUrl) {
+function isSameAiSummarySource(itemSourceUrl, requestedSourceUrl) {
   if (!requestedSourceUrl) return true;
-  const itemUrl = normalizeAiSourceUrl(itemSourceUrl);
-  const requestedUrl = normalizeAiSourceUrl(requestedSourceUrl);
+  const itemUrl = normalizeAiSummarySourceUrl(itemSourceUrl);
+  const requestedUrl = normalizeAiSummarySourceUrl(requestedSourceUrl);
   if (itemUrl && requestedUrl && itemUrl === requestedUrl) return true;
 
-  const itemRoute = parseAiMoocsRoute(itemSourceUrl);
-  const requestedRoute = parseAiMoocsRoute(requestedSourceUrl);
+  const itemRoute = parseMoocsRouteForAiSummary(itemSourceUrl);
+  const requestedRoute = parseMoocsRouteForAiSummary(requestedSourceUrl);
   if (!itemRoute || !requestedRoute) return false;
   if (
     itemRoute.year !== requestedRoute.year ||
@@ -181,19 +181,19 @@ function isSameAiSource(itemSourceUrl, requestedSourceUrl) {
   return true;
 }
 
-function extractAiTextPayload(payload, maxInputChars) {
+function extractAiSummaryInputText(payload, maxInputChars) {
   const text = String(payload?.text || '').replace(/\r\n?/g, '\n').trim();
   if (!text) throw new Error('要約するテキストがありません。');
   return text.slice(0, maxInputChars);
 }
 
-async function requestAiChatCompletion(aiSettings, messages, options = {}) {
+async function requestIniadAiChatCompletion(aiSettings, messages, options = {}) {
   const apiKey = String(aiSettings.apiKey || '').trim();
   if (!apiKey) {
     throw new Error('INIAD AI MOP APIキーが未設定です。設定ページでAPIキーを入力してください。');
   }
 
-  const endpoint = `${normalizeAiBaseUrl(aiSettings.apiBaseUrl)}/chat/completions`;
+  const endpoint = `${normalizeIniadAiBaseUrl(aiSettings.apiBaseUrl)}/chat/completions`;
   const response = await fetch(endpoint, {
     method: 'POST',
     headers: {
@@ -237,7 +237,7 @@ async function requestAiChatCompletion(aiSettings, messages, options = {}) {
   };
 }
 
-async function summarizeWithAi(payload = {}) {
+async function generateAiSummary(payload = {}) {
   const settings = await getSettings();
   const aiSettings = settings.ai || {};
   if (!aiSettings.enableAiSummary) {
@@ -249,13 +249,13 @@ async function summarizeWithAi(payload = {}) {
   }
 
   const maxInputChars = Math.max(1000, Number(aiSettings.maxInputChars || 24000));
-  const text = extractAiTextPayload(payload, maxInputChars);
+  const text = extractAiSummaryInputText(payload, maxInputChars);
   const title = String(payload.title || 'MOOCs slide').trim();
   const sourceUrl = String(payload.sourceUrl || '').trim();
   const model = aiSettings.model || 'gpt-5.4-mini';
   const summaryMode = aiSettings.summaryMode || 'standard';
-  const estimatedInputTokens = estimateTokens(text);
-  const effectiveOutputTokens = getEffectiveAiOutputTokens(aiSettings, summaryMode);
+  const estimatedInputTokens = estimateTokenCountFromText(text);
+  const effectiveOutputTokens = getEffectiveSummaryOutputTokens(aiSettings, summaryMode);
   const estimatedOutputTokens = Math.max(128, effectiveOutputTokens);
   const usage = await getAiUsage();
   const projectedTokens = usage.estimatedInputTokens + usage.estimatedOutputTokens + estimatedInputTokens + estimatedOutputTokens;
@@ -264,7 +264,7 @@ async function summarizeWithAi(payload = {}) {
     throw new Error(`今日のAI token予算を超えそうです。推定 ${projectedTokens} / 上限 ${budget}`);
   }
 
-  const cacheKey = buildAiCacheKey({ sourceUrl, title, text, model, summaryMode });
+  const cacheKey = buildAiSummaryCacheKey({ sourceUrl, title, text, model, summaryMode });
   const summaries = await getAiSummaries();
   if (!payload.forceRefresh && summaries[cacheKey]?.summary) {
     return {
@@ -279,14 +279,14 @@ async function summarizeWithAi(payload = {}) {
   }
 
   const messages = [
-    { role: 'system', content: buildAiSystemPrompt(summaryMode) },
+    { role: 'system', content: buildAiSummarySystemPrompt(summaryMode) },
     {
       role: 'user',
       content: [`タイトル: ${title}`, sourceUrl ? `URL: ${sourceUrl}` : '', '', text].filter(Boolean).join('\n'),
     },
   ];
-  const result = await requestAiChatCompletion(aiSettings, messages, { maxOutputTokens: effectiveOutputTokens });
-  const outputTokens = Number(result.usage?.completion_tokens || estimateTokens(result.summary));
+  const result = await requestIniadAiChatCompletion(aiSettings, messages, { maxOutputTokens: effectiveOutputTokens });
+  const outputTokens = Number(result.usage?.completion_tokens || estimateTokenCountFromText(result.summary));
   const nextUsage = await saveAiUsage({
     ...usage,
     estimatedInputTokens: usage.estimatedInputTokens + Number(result.usage?.prompt_tokens || estimatedInputTokens),
@@ -319,13 +319,13 @@ async function summarizeWithAi(payload = {}) {
   };
 }
 
-async function listAiSummaries(payload = {}) {
+async function listSavedAiSummaries(payload = {}) {
   const summaries = await getAiSummaries();
   const sourceUrl = String(payload.sourceUrl || '').trim();
-  const normalizedSourceUrl = normalizeAiSourceUrl(sourceUrl);
+  const normalizedSourceUrl = normalizeAiSummarySourceUrl(sourceUrl);
   const items = Object.entries(summaries)
     .filter(([, item]) => item && typeof item === 'object' && typeof item.summary === 'string')
-    .filter(([, item]) => !sourceUrl || isSameAiSource(item.sourceUrl, normalizedSourceUrl))
+    .filter(([, item]) => !sourceUrl || isSameAiSummarySource(item.sourceUrl, normalizedSourceUrl))
     .map(([cacheKey, item]) => ({
       cacheKey,
       version: Number(item.version || 0),
@@ -347,27 +347,27 @@ async function listAiSummaries(payload = {}) {
   };
 }
 
-async function deleteAiSummary(payload = {}) {
+async function deleteSavedAiSummary(payload = {}) {
   const cacheKey = String(payload.cacheKey || '').trim();
   if (!cacheKey) throw new Error('削除するAI要約が指定されていません。');
   const summaries = await getAiSummaries();
   delete summaries[cacheKey];
   await saveAiSummaries(summaries);
-  return listAiSummaries(payload);
+  return listSavedAiSummaries(payload);
 }
 
-function normalizeExtractedText(text) {
+function normalizeSlidesExtractedText(text) {
   return String(text || '')
     .replace(/\r\n?/g, '\n')
     .replace(/\n{3,}/g, '\n\n')
     .trim();
 }
 
-async function fetchSlidesExportText(url, exportUrl) {
+async function fetchGoogleSlidesTextExport(url, exportUrl) {
   const response = await fetch(exportUrl, { credentials: 'include' });
   if (!response.ok) throw new Error(`HTTP ${response.status}`);
   const contentType = response.headers.get('content-type') || '';
-  const text = normalizeExtractedText(await response.text());
+  const text = normalizeSlidesExtractedText(await response.text());
   if (/text\/html/i.test(contentType) && /<html|<!doctype/i.test(text.slice(0, 300))) {
     throw new Error('Slides text export returned HTML. Login or sharing settings may block text export.');
   }
@@ -381,30 +381,30 @@ async function fetchSlidesExportText(url, exportUrl) {
   };
 }
 
-async function extractSlidesTextViaHelper(url) {
+async function extractGoogleSlidesTextViaHelperTab(url) {
   let tab = null;
-  const [initialActiveTab] = await tabsQuery({ active: true, currentWindow: true }).catch(() => []);
+  const [initialActiveTab] = await chromeTabsQuery({ active: true, currentWindow: true }).catch(() => []);
   try {
-    tab = await tabsCreate({ url, active: false });
-    await waitForTabComplete(tab.id);
-    await keepSlidesTabInBackground(tab.id, initialActiveTab?.id);
-    const payload = await sendSlidesMessage(tab.id, 'ultimateMoocs:slides.extractText', {}, 8);
+    tab = await chromeTabsCreate({ url, active: false });
+    await waitForChromeTabComplete(tab.id);
+    await restoreUserTabIfSlidesTabActivated(tab.id, initialActiveTab?.id);
+    const payload = await sendMessageToSlidesHelper(tab.id, 'ultimateMoocs:slides.extractText', {}, 8);
     if (!payload?.text) throw new Error('Slides helper returned empty text.');
     return {
       url,
       ok: true,
-      text: normalizeExtractedText(payload.text),
+      text: normalizeSlidesExtractedText(payload.text),
       method: payload.method === 'html_candidates' ? 'html_candidates' : 'svg_helper',
       title: payload.title || '',
       totalPages: payload.totalPages || 0,
       error: '',
     };
   } finally {
-    if (tab?.id) await tabsRemove(tab.id).catch(() => {});
+    if (tab?.id) await chromeTabsRemove(tab.id).catch(() => {});
   }
 }
 
-async function extractSlidesText(payload = {}) {
+async function extractGoogleSlidesTextForUrls(payload = {}) {
   const urls = Array.isArray(payload.urls) ? payload.urls : [];
   const results = [];
 
@@ -419,10 +419,10 @@ async function extractSlidesText(payload = {}) {
     }
 
     try {
-      results.push(await fetchSlidesExportText(url, exportUrl));
+      results.push(await fetchGoogleSlidesTextExport(url, exportUrl));
     } catch (exportError) {
       try {
-        results.push(await extractSlidesTextViaHelper(url));
+        results.push(await extractGoogleSlidesTextViaHelperTab(url));
       } catch (helperError) {
         results.push({
           url,
@@ -644,7 +644,7 @@ function createPdfBuilder() {
   return { addJpegPage, finalize };
 }
 
-function callbackApi(invoker) {
+function callChromeCallbackApi(invoker) {
   return new Promise((resolve, reject) => {
     try {
       invoker((result) => {
@@ -661,45 +661,45 @@ function callbackApi(invoker) {
   });
 }
 
-function tabsCreate(options) {
-  return callbackApi((done) => chrome.tabs.create(options, done));
+function chromeTabsCreate(options) {
+  return callChromeCallbackApi((done) => chrome.tabs.create(options, done));
 }
 
-function tabsGet(tabId) {
-  return callbackApi((done) => chrome.tabs.get(tabId, done));
+function chromeTabsGet(tabId) {
+  return callChromeCallbackApi((done) => chrome.tabs.get(tabId, done));
 }
 
-function tabsRemove(tabId) {
-  return callbackApi((done) => chrome.tabs.remove(tabId, done));
+function chromeTabsRemove(tabId) {
+  return callChromeCallbackApi((done) => chrome.tabs.remove(tabId, done));
 }
 
-function tabsQuery(queryInfo) {
-  return callbackApi((done) => chrome.tabs.query(queryInfo, done));
+function chromeTabsQuery(queryInfo) {
+  return callChromeCallbackApi((done) => chrome.tabs.query(queryInfo, done));
 }
 
-function tabsSendMessage(tabId, message) {
-  return callbackApi((done) => chrome.tabs.sendMessage(tabId, message, done));
+function chromeTabsSendMessage(tabId, message) {
+  return callChromeCallbackApi((done) => chrome.tabs.sendMessage(tabId, message, done));
 }
 
-function tabsUpdate(tabId, updateProperties) {
-  return callbackApi((done) => chrome.tabs.update(tabId, updateProperties, done));
+function chromeTabsUpdate(tabId, updateProperties) {
+  return callChromeCallbackApi((done) => chrome.tabs.update(tabId, updateProperties, done));
 }
 
-function tabsCaptureVisibleTab(windowId, options) {
-  return callbackApi((done) => chrome.tabs.captureVisibleTab(windowId, options, done));
+function chromeTabsCaptureVisibleTab(windowId, options) {
+  return callChromeCallbackApi((done) => chrome.tabs.captureVisibleTab(windowId, options, done));
 }
 
-function scriptingInsertCSS(tabId, files) {
-  return callbackApi((done) => chrome.scripting.insertCSS({ target: { tabId }, files }, done));
+function chromeScriptingInsertCSS(tabId, files) {
+  return callChromeCallbackApi((done) => chrome.scripting.insertCSS({ target: { tabId }, files }, done));
 }
 
-function scriptingExecuteFiles(tabId, files) {
-  return callbackApi((done) => chrome.scripting.executeScript({ target: { tabId }, files }, done));
+function chromeScriptingExecuteFiles(tabId, files) {
+  return callChromeCallbackApi((done) => chrome.scripting.executeScript({ target: { tabId }, files }, done));
 }
 
-async function reconnectOpenMoocsTabs() {
+async function reinjectContentScriptsIntoOpenMoocsTabs() {
   if (!chrome.scripting?.executeScript || !chrome.scripting?.insertCSS) return;
-  const tabs = await tabsQuery({ url: 'https://moocs.iniad.org/*' });
+  const tabs = await chromeTabsQuery({ url: 'https://moocs.iniad.org/*' });
   await Promise.all(
     tabs
       .filter((tab) => Number.isInteger(tab.id))
@@ -707,13 +707,13 @@ async function reconnectOpenMoocsTabs() {
         try {
           if (tab.status === 'loading') return;
           try {
-            await tabsSendMessage(tab.id, { type: 'ultimateMoocs:content.probe' });
+            await chromeTabsSendMessage(tab.id, { type: 'ultimateMoocs:content.probe' });
             return;
           } catch {
             // No live content script is attached after an extension reload.
           }
-          await scriptingInsertCSS(tab.id, ['styles/content.css']);
-          await scriptingExecuteFiles(tab.id, ['content/index.js']);
+          await chromeScriptingInsertCSS(tab.id, ['styles/content.css']);
+          await chromeScriptingExecuteFiles(tab.id, ['content/index.js']);
         } catch (error) {
           console.warn('[ultimateMoocs:background] failed to reconnect MOOCs tab', tab.id, error);
         }
@@ -722,10 +722,10 @@ async function reconnectOpenMoocsTabs() {
 }
 
 function runtimeOpenOptionsPage() {
-  return callbackApi((done) => chrome.runtime.openOptionsPage(done));
+  return callChromeCallbackApi((done) => chrome.runtime.openOptionsPage(done));
 }
 
-function timestampForFilename(date = new Date()) {
+function createTimestampForFilename(date = new Date()) {
   const pad = (value) => String(value).padStart(2, '0');
   return [
     date.getFullYear(),
@@ -735,7 +735,7 @@ function timestampForFilename(date = new Date()) {
   ].join('-');
 }
 
-async function captureVisibleScreenshot(sender = {}, payload = {}) {
+async function captureVisibleTabScreenshot(sender = {}, payload = {}) {
   const now = Date.now();
   if (now - lastScreenshotCaptureAt < 1200) {
     return { skipped: true, filename: '' };
@@ -749,10 +749,10 @@ async function captureVisibleScreenshot(sender = {}, payload = {}) {
 
   const pageTitle = sanitizePathPart(payload.title || tab.title || 'moocs-page', 'moocs-page');
   const filename = sanitizeFilename(
-    `moocs-ultimate/screenshots/${timestampForFilename()}_${pageTitle}.png`,
+    `moocs-ultimate/screenshots/${createTimestampForFilename()}_${pageTitle}.png`,
     'moocs-screenshot.png',
   );
-  const dataUrl = await tabsCaptureVisibleTab(tab.windowId, { format: 'png' });
+  const dataUrl = await chromeTabsCaptureVisibleTab(tab.windowId, { format: 'png' });
   if (payload.action === 'clipboard') {
     return {
       filename,
@@ -771,18 +771,18 @@ async function captureVisibleScreenshot(sender = {}, payload = {}) {
   return { filename };
 }
 
-async function captureScreenshotFromActiveTab() {
+async function captureActiveMoocsTabScreenshot() {
   const settings = await getSettings();
   if (!settings.downloads?.enableScreenshotShortcut) return;
 
-  const [tab] = await tabsQuery({ active: true, currentWindow: true });
+  const [tab] = await chromeTabsQuery({ active: true, currentWindow: true });
   if (!tab?.id || !/^https:\/\/moocs\.iniad\.org\//i.test(tab.url || '')) return;
   const action = settings.downloads.screenshotShortcutAction === 'clipboard' ? 'clipboard' : 'download';
-  const result = await captureVisibleScreenshot({ tab }, { action, title: tab.title, href: tab.url });
+  const result = await captureVisibleTabScreenshot({ tab }, { action, title: tab.title, href: tab.url });
 
   if (action === 'clipboard') {
     if (result.skipped) return;
-    await tabsSendMessage(tab.id, {
+    await chromeTabsSendMessage(tab.id, {
       type: MESSAGE_TYPES.screenshotShowCopyDialog,
       payload: {
         dataUrl: result.dataUrl,
@@ -792,38 +792,38 @@ async function captureScreenshotFromActiveTab() {
   }
 }
 
-async function waitForTabComplete(tabId, timeoutMs = 30000) {
+async function waitForChromeTabComplete(tabId, timeoutMs = 30000) {
   const start = Date.now();
   while (Date.now() - start < timeoutMs) {
-    const tab = await tabsGet(tabId);
+    const tab = await chromeTabsGet(tabId);
     if (tab.status === 'complete') return tab;
     await delay(250);
   }
   throw new Error('Slides tab load timed out');
 }
 
-async function keepSlidesTabInBackground(tabId, restoreTabId = null) {
-  const tab = await tabsGet(tabId);
+async function restoreUserTabIfSlidesTabActivated(tabId, restoreTabId = null) {
+  const tab = await chromeTabsGet(tabId);
   if (tab.active && restoreTabId && restoreTabId !== tabId) {
-    await tabsUpdate(restoreTabId, { active: true }).catch(() => {});
+    await chromeTabsUpdate(restoreTabId, { active: true }).catch(() => {});
     await delay(300);
-    return tabsGet(tabId);
+    return chromeTabsGet(tabId);
   }
   return tab;
 }
 
-async function assertSlidesTabInBackground(tabId, restoreTabId = null) {
-  const tab = await keepSlidesTabInBackground(tabId, restoreTabId);
+async function ensureSlidesTabRemainsInBackground(tabId, restoreTabId = null) {
+  const tab = await restoreUserTabIfSlidesTabActivated(tabId, restoreTabId);
   if (tab.active) {
     throw new Error('Slides tab was activated during export. Export was stopped to avoid interfering with user actions.');
   }
 }
 
-async function sendSlidesMessage(tabId, type, payload = {}, retries = 20) {
+async function sendMessageToSlidesHelper(tabId, type, payload = {}, retries = 20) {
   let lastError = null;
   for (let attempt = 0; attempt < retries; attempt += 1) {
     try {
-      const response = await tabsSendMessage(tabId, { type, payload });
+      const response = await chromeTabsSendMessage(tabId, { type, payload });
       if (!response?.ok) throw new Error(response?.error || 'Slides helper failed');
       return response.payload;
     } catch (error) {
@@ -834,7 +834,7 @@ async function sendSlidesMessage(tabId, type, payload = {}, retries = 20) {
   throw lastError || new Error('Slides helper unavailable');
 }
 
-async function downloadDataUrl(dataUrl, filename) {
+async function downloadDataUrlWithChrome(dataUrl, filename) {
   await downloadsDownload({
     url: dataUrl,
     filename: sanitizeFilename(filename),
@@ -843,15 +843,15 @@ async function downloadDataUrl(dataUrl, filename) {
   });
 }
 
-async function downloadPdfBlob(blob, filename) {
-  await downloadDataUrl(await blobToDataUrl(blob), filename);
+async function downloadPdfBlobWithChrome(blob, filename) {
+  await downloadDataUrlWithChrome(await blobToDataUrl(blob), filename);
 }
 
-async function tryExportSlidesPdfDirect(entry, outputBase, run) {
+async function tryDownloadSlidesPdfDirectly(entry, outputBase, run) {
   const exportUrl = getGoogleSlidesPdfExportUrl(entry.sourceUrl || entry.url || entry.downloadUrl);
   if (!exportUrl) return false;
 
-  await updateDownloadState({ currentFile: `${outputBase}.pdf`, downloadModeLabel: '高速ダウンロード' }, run);
+  await mergeDownloadStateForRun({ currentFile: `${outputBase}.pdf`, downloadModeLabel: '高速ダウンロード' }, run);
   try {
     const response = await fetch(exportUrl, { credentials: 'include' });
     if (!response.ok) return false;
@@ -869,7 +869,7 @@ async function tryExportSlidesPdfDirect(entry, outputBase, run) {
       return false;
     }
 
-    await downloadPdfBlob(new Blob([bytes], { type: 'application/pdf' }), `${outputBase}.pdf`);
+    await downloadPdfBlobWithChrome(new Blob([bytes], { type: 'application/pdf' }), `${outputBase}.pdf`);
     return true;
   } catch (error) {
     console.warn('[ultimateMoocs:slides] fast PDF export failed, falling back to SVG export', error);
@@ -877,25 +877,25 @@ async function tryExportSlidesPdfDirect(entry, outputBase, run) {
   }
 }
 
-async function exportSlidesPdf(tabId, outputBase, totalPages, previousSnapshot, run, restoreTabId) {
+async function exportSlidesPdfViaViewer(tabId, outputBase, totalPages, previousSnapshot, run, restoreTabId) {
   const pdfBuilder = createPdfBuilder();
   let snapshot = previousSnapshot || '';
 
   for (let page = 1; page <= totalPages; page += 1) {
     if (run.canceled) throw new Error('Canceled');
-    await assertSlidesTabInBackground(tabId, restoreTabId);
-    await updateDownloadState({
+    await ensureSlidesTabRemainsInBackground(tabId, restoreTabId);
+    await mergeDownloadStateForRun({
       currentFile: `${outputBase}.pdf (${page}/${totalPages})`,
       downloadModeLabel: '回避ダウンロード',
     }, run);
 
-    const stable = await sendSlidesMessage(tabId, 'ultimateMoocs:slides.stable', {
+    const stable = await sendMessageToSlidesHelper(tabId, 'ultimateMoocs:slides.stable', {
       page,
       previousSnapshot: snapshot,
     });
     snapshot = stable.snapshot || snapshot;
 
-    const rasterized = await sendSlidesMessage(tabId, 'ultimateMoocs:slides.rasterizeJpeg', {
+    const rasterized = await sendMessageToSlidesHelper(tabId, 'ultimateMoocs:slides.rasterizeJpeg', {
       page,
       quality: 88,
       scale: 1.5,
@@ -913,29 +913,29 @@ async function exportSlidesPdf(tabId, outputBase, totalPages, previousSnapshot, 
     });
 
     if (page < totalPages) {
-      await sendSlidesMessage(tabId, 'ultimateMoocs:slides.goto', {
+      await sendMessageToSlidesHelper(tabId, 'ultimateMoocs:slides.goto', {
         page: page + 1,
       });
     }
   }
 
-  await updateDownloadState({ currentFile: `${outputBase}.pdf` }, run);
-  await downloadPdfBlob(pdfBuilder.finalize(), `${outputBase}.pdf`);
+  await mergeDownloadStateForRun({ currentFile: `${outputBase}.pdf` }, run);
+  await downloadPdfBlobWithChrome(pdfBuilder.finalize(), `${outputBase}.pdf`);
 }
 
-async function exportSlidesFastPdf(tabId, outputBase, session, run, restoreTabId) {
+async function exportSlidesPdfFromFastSvgSession(tabId, outputBase, session, run, restoreTabId) {
   const totalPages = Math.max(1, Number(session.totalPages || 1));
   const pdfBuilder = createPdfBuilder();
 
   for (let page = 1; page <= totalPages; page += 1) {
     if (run.canceled) throw new Error('Canceled');
-    await assertSlidesTabInBackground(tabId, restoreTabId);
-    await updateDownloadState({
+    await ensureSlidesTabRemainsInBackground(tabId, restoreTabId);
+    await mergeDownloadStateForRun({
       currentFile: `${outputBase}.pdf (${page}/${totalPages})`,
       downloadModeLabel: '高速ダウンロード',
     }, run);
 
-    const rasterized = await sendSlidesMessage(tabId, 'ultimateMoocs:slides.fastRasterizeJpeg', {
+    const rasterized = await sendMessageToSlidesHelper(tabId, 'ultimateMoocs:slides.fastRasterizeJpeg', {
       page,
       quality: 88,
       scale: 1.5,
@@ -953,30 +953,30 @@ async function exportSlidesFastPdf(tabId, outputBase, session, run, restoreTabId
     });
   }
 
-  await updateDownloadState({ currentFile: `${outputBase}.pdf` }, run);
-  await downloadPdfBlob(pdfBuilder.finalize(), `${outputBase}.pdf`);
+  await mergeDownloadStateForRun({ currentFile: `${outputBase}.pdf` }, run);
+  await downloadPdfBlobWithChrome(pdfBuilder.finalize(), `${outputBase}.pdf`);
 }
 
-async function exportSlidesPng(tabId, outputBase, totalPages, previousSnapshot, run, restoreTabId) {
+async function exportSlidesPngViaViewer(tabId, outputBase, totalPages, previousSnapshot, run, restoreTabId) {
   let snapshot = previousSnapshot || '';
 
   for (let page = 1; page <= totalPages; page += 1) {
     if (run.canceled) throw new Error('Canceled');
-    await assertSlidesTabInBackground(tabId, restoreTabId);
+    await ensureSlidesTabRemainsInBackground(tabId, restoreTabId);
     const padded = String(page).padStart(3, '0');
     const filename = `${outputBase}_p${padded}.png`;
-    await updateDownloadState({
+    await mergeDownloadStateForRun({
       currentFile: `${filename} (${page}/${totalPages})`,
       downloadModeLabel: '回避ダウンロード',
     }, run);
 
-    const stable = await sendSlidesMessage(tabId, 'ultimateMoocs:slides.stable', {
+    const stable = await sendMessageToSlidesHelper(tabId, 'ultimateMoocs:slides.stable', {
       page,
       previousSnapshot: snapshot,
     });
     snapshot = stable.snapshot || snapshot;
 
-    const rasterized = await sendSlidesMessage(tabId, 'ultimateMoocs:slides.rasterizePng', {
+    const rasterized = await sendMessageToSlidesHelper(tabId, 'ultimateMoocs:slides.rasterizePng', {
       page,
       scale: 1.5,
       minWidth: 1024,
@@ -985,30 +985,30 @@ async function exportSlidesPng(tabId, outputBase, totalPages, previousSnapshot, 
     if (!rasterized?.dataUrl) {
       throw new Error(`Slides page ${page} PNG export failed`);
     }
-    await downloadDataUrl(rasterized.dataUrl, filename);
+    await downloadDataUrlWithChrome(rasterized.dataUrl, filename);
 
     if (page < totalPages) {
-      await sendSlidesMessage(tabId, 'ultimateMoocs:slides.goto', {
+      await sendMessageToSlidesHelper(tabId, 'ultimateMoocs:slides.goto', {
         page: page + 1,
       });
     }
   }
 }
 
-async function exportSlidesFastPng(tabId, outputBase, session, run, restoreTabId) {
+async function exportSlidesPngFromFastSvgSession(tabId, outputBase, session, run, restoreTabId) {
   const totalPages = Math.max(1, Number(session.totalPages || 1));
 
   for (let page = 1; page <= totalPages; page += 1) {
     if (run.canceled) throw new Error('Canceled');
-    await assertSlidesTabInBackground(tabId, restoreTabId);
+    await ensureSlidesTabRemainsInBackground(tabId, restoreTabId);
     const padded = String(page).padStart(3, '0');
     const filename = `${outputBase}_p${padded}.png`;
-    await updateDownloadState({
+    await mergeDownloadStateForRun({
       currentFile: `${filename} (${page}/${totalPages})`,
       downloadModeLabel: '高速ダウンロード',
     }, run);
 
-    const rasterized = await sendSlidesMessage(tabId, 'ultimateMoocs:slides.fastRasterizePng', {
+    const rasterized = await sendMessageToSlidesHelper(tabId, 'ultimateMoocs:slides.fastRasterizePng', {
       page,
       scale: 1.5,
       minWidth: 1024,
@@ -1017,35 +1017,35 @@ async function exportSlidesFastPng(tabId, outputBase, session, run, restoreTabId
     if (!rasterized?.dataUrl) {
       throw new Error(`Slides fast page ${page} PNG export failed`);
     }
-    await downloadDataUrl(rasterized.dataUrl, filename);
+    await downloadDataUrlWithChrome(rasterized.dataUrl, filename);
   }
 }
 
-function getSlidesOutputBase(entry, session) {
+function buildSlidesOutputBasePath(entry, session) {
   const base = stripExtension(entry.filename || session.title || 'google-slides');
   const folderParts = sanitizeFilename(base).split('/');
   folderParts[folderParts.length - 1] = sanitizePathPart(session.title || folderParts.at(-1), 'google-slides');
   return folderParts.join('/');
 }
 
-async function processGoogleSlides(entry, run) {
+async function downloadGoogleSlidesEntry(entry, run) {
   let tab = null;
   const format = entry.exportFormat === 'png' ? 'png' : 'pdf';
   try {
     if (format === 'pdf') {
-      const outputBase = getSlidesOutputBase(entry, {});
-      if (await tryExportSlidesPdfDirect(entry, outputBase, run)) {
+      const outputBase = buildSlidesOutputBasePath(entry, {});
+      if (await tryDownloadSlidesPdfDirectly(entry, outputBase, run)) {
         return;
       }
     }
 
-    const [initialActiveTab] = await tabsQuery({ active: true, currentWindow: true }).catch(() => []);
-    tab = await tabsCreate({ url: entry.url, active: false });
-    await waitForTabComplete(tab.id);
-    await keepSlidesTabInBackground(tab.id, initialActiveTab?.id);
+    const [initialActiveTab] = await chromeTabsQuery({ active: true, currentWindow: true }).catch(() => []);
+    tab = await chromeTabsCreate({ url: entry.url, active: false });
+    await waitForChromeTabComplete(tab.id);
+    await restoreUserTabIfSlidesTabActivated(tab.id, initialActiveTab?.id);
 
     try {
-      const fastSession = await sendSlidesMessage(tab.id, 'ultimateMoocs:slides.fastSession', {}, 4);
+      const fastSession = await sendMessageToSlidesHelper(tab.id, 'ultimateMoocs:slides.fastSession', {}, 4);
       if (fastSession.rawSvgCount && fastSession.rawSvgCount > fastSession.totalPages) {
         console.info('[ultimateMoocs:slides] ignored extra SVG snapshots', {
           rawSvgCount: fastSession.rawSvgCount,
@@ -1053,39 +1053,39 @@ async function processGoogleSlides(entry, run) {
           url: entry.url,
         });
       }
-      const outputBase = getSlidesOutputBase(entry, fastSession);
+      const outputBase = buildSlidesOutputBasePath(entry, fastSession);
       if (format === 'pdf') {
-        await exportSlidesFastPdf(tab.id, outputBase, fastSession, run, initialActiveTab?.id);
+        await exportSlidesPdfFromFastSvgSession(tab.id, outputBase, fastSession, run, initialActiveTab?.id);
         return;
       }
-      await exportSlidesFastPng(tab.id, outputBase, fastSession, run, initialActiveTab?.id);
+      await exportSlidesPngFromFastSvgSession(tab.id, outputBase, fastSession, run, initialActiveTab?.id);
       return;
     } catch (error) {
       console.warn('[ultimateMoocs:slides] fast SVG export failed, falling back to viewer export', error);
     }
 
-    let session = await sendSlidesMessage(tab.id, 'ultimateMoocs:slides.session');
-    session = await sendSlidesMessage(tab.id, 'ultimateMoocs:slides.first');
-    let snapshotPayload = await sendSlidesMessage(tab.id, 'ultimateMoocs:slides.stable');
+    let session = await sendMessageToSlidesHelper(tab.id, 'ultimateMoocs:slides.session');
+    session = await sendMessageToSlidesHelper(tab.id, 'ultimateMoocs:slides.first');
+    let snapshotPayload = await sendMessageToSlidesHelper(tab.id, 'ultimateMoocs:slides.stable');
     let previousSnapshot = snapshotPayload.snapshot;
     const totalPages = Math.max(1, Number(session.totalPages || snapshotPayload.session?.totalPages || 1));
-    const outputBase = getSlidesOutputBase(entry, session);
+    const outputBase = buildSlidesOutputBasePath(entry, session);
 
     if (format === 'pdf') {
-      await assertSlidesTabInBackground(tab.id, initialActiveTab?.id);
-      await exportSlidesPdf(tab.id, outputBase, totalPages, previousSnapshot, run, initialActiveTab?.id);
+      await ensureSlidesTabRemainsInBackground(tab.id, initialActiveTab?.id);
+      await exportSlidesPdfViaViewer(tab.id, outputBase, totalPages, previousSnapshot, run, initialActiveTab?.id);
       return;
     }
 
-    await exportSlidesPng(tab.id, outputBase, totalPages, previousSnapshot, run, initialActiveTab?.id);
+    await exportSlidesPngViaViewer(tab.id, outputBase, totalPages, previousSnapshot, run, initialActiveTab?.id);
   } catch (error) {
     throw error;
   } finally {
-    if (tab?.id) await tabsRemove(tab.id).catch(() => {});
+    if (tab?.id) await chromeTabsRemove(tab.id).catch(() => {});
   }
 }
 
-async function updateDownloadState(patch, run = activeDownloadRun) {
+async function mergeDownloadStateForRun(patch, run = activeDownloadRun) {
   const current = await getDownloadState();
   if (run?.id && current.runId && current.runId !== run.id) {
     return current;
@@ -1093,7 +1093,7 @@ async function updateDownloadState(patch, run = activeDownloadRun) {
   return saveDownloadState({ ...current, ...patch, runId: run?.id || current.runId });
 }
 
-async function processDownloadQueue(entries, scope) {
+async function runDownloadQueue(entries, scope) {
   if (activeDownloadRun) {
     activeDownloadRun.canceled = true;
   }
@@ -1120,13 +1120,13 @@ async function processDownloadQueue(entries, scope) {
 
   for (const entry of entries) {
     if (run.canceled) {
-      await updateDownloadState({ status: 'canceled', currentFile: '', canceled: true }, run);
+      await mergeDownloadStateForRun({ status: 'canceled', currentFile: '', canceled: true }, run);
       if (activeDownloadRun === run) activeDownloadRun = null;
       return;
     }
 
     const currentState = await getDownloadState();
-    await updateDownloadState({
+    await mergeDownloadStateForRun({
       status: 'running',
       currentFile: entry.filename || entry.url,
       downloadModeLabel: entry.kind === 'google_slides' ? '' : '',
@@ -1134,8 +1134,8 @@ async function processDownloadQueue(entries, scope) {
 
     try {
       if (entry.kind === 'google_slides') {
-        await processGoogleSlides(entry, run);
-        await updateDownloadState({ completed: currentState.completed + 1 }, run);
+        await downloadGoogleSlidesEntry(entry, run);
+        await mergeDownloadStateForRun({ completed: currentState.completed + 1 }, run);
         continue;
       }
 
@@ -1150,13 +1150,13 @@ async function processDownloadQueue(entries, scope) {
         conflictAction: 'uniquify',
       });
 
-      await updateDownloadState({ completed: currentState.completed + 1 }, run);
+      await mergeDownloadStateForRun({ completed: currentState.completed + 1 }, run);
     } catch (error) {
       const latest = await getDownloadState();
       if (latest.runId && latest.runId !== run.id) {
         continue;
       }
-      await updateDownloadState({
+      await mergeDownloadStateForRun({
         failed: latest.failed + 1,
         failures: [
           ...latest.failures,
@@ -1170,11 +1170,11 @@ async function processDownloadQueue(entries, scope) {
     }
   }
 
-  await updateDownloadState({ status: 'complete', currentFile: '', downloadModeLabel: '' }, run);
+  await mergeDownloadStateForRun({ status: 'complete', currentFile: '', downloadModeLabel: '' }, run);
   if (activeDownloadRun === run) activeDownloadRun = null;
 }
 
-function sendAsync(handler) {
+function createAsyncRuntimeResponder(handler) {
   return (message, sender, sendResponse) => {
     if (!isUltimateMoocsMessage(message)) {
       return false;
@@ -1196,7 +1196,7 @@ function sendAsync(handler) {
   };
 }
 
-async function handleMessage(message, sender) {
+async function handleRuntimeMessage(message, sender) {
   switch (message.type) {
     case MESSAGE_TYPES.contentPing:
       return {
@@ -1226,13 +1226,13 @@ async function handleMessage(message, sender) {
         throw new Error('デベロッパーモードがOFFのため診断機能は利用できません。');
       }
       const manifest = browserApi.runtime.getManifest();
-      const moocsTabs = await tabsQuery({ url: 'https://moocs.iniad.org/*' }).catch(() => []);
+      const moocsTabs = await chromeTabsQuery({ url: 'https://moocs.iniad.org/*' }).catch(() => []);
       const probeResults = await Promise.all(
         moocsTabs
           .filter((tab) => Number.isInteger(tab.id))
           .map(async (tab) => {
             try {
-              const response = await tabsSendMessage(tab.id, { type: 'ultimateMoocs:content.probe' });
+              const response = await chromeTabsSendMessage(tab.id, { type: 'ultimateMoocs:content.probe' });
               return Boolean(response?.ok && response?.ready);
             } catch {
               return false;
@@ -1289,7 +1289,7 @@ async function handleMessage(message, sender) {
       try {
         await runtimeOpenOptionsPage();
       } catch {
-        await tabsCreate({ url: chrome.runtime.getURL('options/index.html'), active: true });
+        await chromeTabsCreate({ url: chrome.runtime.getURL('options/index.html'), active: true });
       }
       return { opened: true };
 
@@ -1305,7 +1305,7 @@ async function handleMessage(message, sender) {
       };
 
     case MESSAGE_TYPES.screenshotCapture:
-      return captureVisibleScreenshot(sender, message.payload);
+      return captureVisibleTabScreenshot(sender, message.payload);
 
     case MESSAGE_TYPES.aiUsageGet:
       return {
@@ -1313,17 +1313,17 @@ async function handleMessage(message, sender) {
       };
 
     case MESSAGE_TYPES.aiSummaryList:
-      return listAiSummaries(message.payload);
+      return listSavedAiSummaries(message.payload);
 
     case MESSAGE_TYPES.aiSummaryDelete:
-      return deleteAiSummary(message.payload);
+      return deleteSavedAiSummary(message.payload);
 
     case MESSAGE_TYPES.slidesTextExtract:
     case MESSAGE_TYPES.aiExtractSlidesText:
-      return extractSlidesText(message.payload);
+      return extractGoogleSlidesTextForUrls(message.payload);
 
     case MESSAGE_TYPES.aiSummarize:
-      return summarizeWithAi(message.payload);
+      return generateAiSummary(message.payload);
 
     case 'ultimateMoocs:slides.imageDataUrl': {
       const url = String(message.payload?.url || '');
@@ -1340,7 +1340,7 @@ async function handleMessage(message, sender) {
 
     case MESSAGE_TYPES.downloadCancel:
       if (activeDownloadRun) activeDownloadRun.canceled = true;
-      await updateDownloadState({ status: 'canceled', currentFile: '', canceled: true });
+      await mergeDownloadStateForRun({ status: 'canceled', currentFile: '', canceled: true });
       return {
         state: await getDownloadState(),
       };
@@ -1355,7 +1355,7 @@ async function handleMessage(message, sender) {
             .map((entry) => [entry.url, entry]),
         ).values(),
       ];
-      processDownloadQueue(uniqueEntries, scope).catch((error) => {
+      runDownloadQueue(uniqueEntries, scope).catch((error) => {
         console.error('[ultimateMoocs:download]', error);
       });
       return {
@@ -1374,15 +1374,15 @@ async function handleMessage(message, sender) {
 
 browserApi.runtime.onInstalled.addListener(async () => {
   await saveSettings(await getSettings());
-  await reconnectOpenMoocsTabs();
+  await reinjectContentScriptsIntoOpenMoocsTabs();
   console.info('[ultimateMoocs:background] installed');
 });
 
-browserApi.runtime.onMessage.addListener(sendAsync(handleMessage));
+browserApi.runtime.onMessage.addListener(createAsyncRuntimeResponder(handleRuntimeMessage));
 
 chrome.commands?.onCommand?.addListener((command) => {
   if (command !== 'ultimateMoocs.captureScreenshot') return;
-  captureScreenshotFromActiveTab().catch(() => {});
+  captureActiveMoocsTabScreenshot().catch(() => {});
 });
 
 export async function downloadUrl({ url, filename }) {
