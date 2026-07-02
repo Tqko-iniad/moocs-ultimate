@@ -1,6 +1,6 @@
 {
   "name": "moocs-ultimate",
-  "version": "0.1.0-alpha.1",
+  "version": "0.1.0-alpha.2",
   "private": true,
   "description": "Personal Manifest V3 browser extension for INIAD MOOCs.",
   "packageManager": "pnpm@10.30.2",
