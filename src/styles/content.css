@@ -476,6 +476,36 @@
   outline-offset: 2px;
 }
 
+.um-slide-tools-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: grab;
+  user-select: none;
+  touch-action: none;
+}
+
+.um-slide-tools-header:active {
+  cursor: grabbing;
+}
+
+.um-slide-tools-close {
+  min-height: 24px !important;
+  min-width: 24px !important;
+  padding: 0 4px !important;
+  font-size: 14px !important;
+  line-height: 1 !important;
+  border: none !important;
+  background: transparent !important;
+  color: inherit !important;
+  opacity: 0.6;
+  cursor: pointer;
+}
+
+.um-slide-tools-close:hover {
+  opacity: 1;
+}
+
 .um-slide-tools label {
   display: grid;
   gap: 3px;
