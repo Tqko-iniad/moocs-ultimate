@@ -22,6 +22,7 @@ import {
 } from '../shared/storage.js';
 import { createExternalLinksPanelController } from './externalLinksPanel.js';
 import { createSlideResizeToolsController } from './slideResizeTools.js';
+import { createSlidePositionRestoreController } from './slidePositionRestore.js';
 import { createAccountSettingsLinkController } from './accountSettingsLink.js';
 import { createGlobalDriveButtonController } from './globalDriveButton.js';
 import { createPageMemoPanelController } from './pageMemoPanel.js';
@@ -42,6 +43,7 @@ import {
   updateAiSummaryActionButtons as updateAiSummaryActionButtonsView,
   updateAiSummaryCacheStateView as updateAiSummaryCacheStateViewPanel,
   updateAiSummaryTokenEstimate as updateAiSummaryTokenEstimateView,
+  setAiSummaryStaleState,
 } from './aiSummaryPanelView.js';
 import {
   createDownloadPanelElement,
@@ -214,6 +216,9 @@ const externalLinksPanelController = createExternalLinksPanelController({
 const slideResizeToolsController = createSlideResizeToolsController({
   document,
   getCurrentSettings: () => currentSettings,
+});
+const slidePositionRestoreController = createSlidePositionRestoreController({
+  document,
 });
 const accountSettingsLinkController = createAccountSettingsLinkController({
   document,
@@ -432,8 +437,8 @@ function ensureRuntimeStyle() {
     html[data-um-glassmorphism="true"] .box-title {
       color: var(--um-glass-text-color) !important;
     }
-    html[data-um-glassmorphism="true"] .btn,
-    html[data-um-glassmorphism="true"] button:not(.um-scroll-top-button):not(.um-settings-link-button) {
+    html[data-um-glassmorphism="true"] .btn:not([data-um-module]):not([data-um-module] .btn):not([data-um-owned="true"]),
+    html[data-um-glassmorphism="true"] button:not(.um-scroll-top-button):not(.um-settings-link-button):not([data-um-module]):not([data-um-module] button):not([data-um-owned="true"]) {
       border-color: rgba(148, 163, 184, 0.28) !important;
       color: #ffffff !important;
     }
@@ -2024,6 +2029,7 @@ function updateAiSummaryCacheStateView({ cached = false, updatedAt = '', hasApiK
 async function refreshAiSummaryCacheState() {
   if (!aiSummaryPanel) return;
   resetAiSummaryPanelForSource(getCanonicalMoocsUrl());
+  setAiSummaryStaleState(aiSummaryPanel, false);
   const cacheRow = aiSummaryPanel.querySelector('.um-ai-cache-row');
   const cacheText = aiSummaryPanel.querySelector('.um-ai-cache-text');
   const output = aiSummaryPanel.querySelector('.um-ai-output');
@@ -2075,6 +2081,51 @@ async function showCachedAiSummaryForCurrentPage() {
     ...latest,
     cached: true,
   });
+}
+
+async function checkAiSummaryStaleForCurrentPage() {
+  if (!aiSummaryPanel) return;
+  if (aiSummaryBusy) return;
+  const currentSourceUrl = getCanonicalMoocsUrl();
+  setAiSummaryBusyState(true);
+  try {
+    if (!aiSummaryDraft.text || aiSummaryDraft.sourceUrl !== currentSourceUrl) {
+      setAiSummaryPanelStatus('要約用テキストを準備しています...');
+      await prepareAiSummaryRequestDraft();
+    }
+    if (getCanonicalMoocsUrl() !== currentSourceUrl || aiSummaryPanel?.dataset.umSourceUrl !== currentSourceUrl) {
+      return;
+    }
+    const text = aiSummaryDraft.text.trim();
+    if (!text) {
+      setAiSummaryPanelStatus('確認するテキストがありません。', true);
+      return;
+    }
+    setAiSummaryPanelStatus('内容の変更を確認しています...');
+    const response = await runtimeSendMessage(
+      createMessage(MESSAGE_TYPES.aiSummaryCheckStale, {
+        title: aiSummaryDraft.title || getCurrentAiSummaryTitle(),
+        sourceUrl: aiSummaryDraft.sourceUrl || currentSourceUrl,
+        text,
+      }),
+    );
+    if (getCanonicalMoocsUrl() !== currentSourceUrl || aiSummaryPanel?.dataset.umSourceUrl !== currentSourceUrl) {
+      return;
+    }
+    if (!response?.ok) {
+      setAiSummaryPanelStatus(response?.error || '更新確認に失敗しました。', true);
+      return;
+    }
+    const stale = Boolean(response.payload?.stale);
+    setAiSummaryStaleState(aiSummaryPanel, stale);
+    setAiSummaryPanelStatus(
+      stale
+        ? '内容が更新されている可能性があります。必要なら「再生成」してください。'
+        : '保存済み要約は現在の内容と一致しています。',
+    );
+  } finally {
+    setAiSummaryBusyState(false);
+  }
 }
 
 function renderAiSummaryOutput(summary, meta = {}) {
@@ -2232,6 +2283,11 @@ function ensureAiSummaryPanel() {
         runAiSummaryRequest({ forceRefresh: true }).catch((error) => {
           reportContentError('[ultimateMoocs:ai]', error);
           setAiSummaryPanelStatus(error?.message || '再生成に失敗しました。', true);
+        });
+      } else if (action === 'check-stale') {
+        checkAiSummaryStaleForCurrentPage().catch((error) => {
+          reportContentError('[ultimateMoocs:ai]', error);
+          setAiSummaryPanelStatus(error?.message || '更新確認に失敗しました。', true);
         });
       } else if (action === 'copy') {
         copyRenderedAiSummary().catch((error) => {
@@ -2528,6 +2584,9 @@ function applyLearningToolFeatures() {
   externalLinksPanelController.ensureMounted();
   ensureGlobalDriveButtonMounted();
   slideResizeToolsController.ensureMounted();
+  if (currentSettings?.navigation?.enableSlidePositionRestore) {
+    slidePositionRestoreController.ensureMounted().catch((error) => reportContentError('[ultimateMoocs:slide-position]', error));
+  }
 }
 
 function applyRuntimeSettings(settings) {

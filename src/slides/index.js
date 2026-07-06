@@ -797,6 +797,36 @@ function rasterizeCurrentSlidePng(page, options = {}) {
   });
 }
 
+function startSlidePositionTracker() {
+  let lastPage = null;
+  const interval = setInterval(() => {
+    const page = getViewerCurrentPage() || getSessionInfo().currentPage;
+    if (page && page !== lastPage) {
+      lastPage = page;
+      const key = location.origin + location.pathname;
+      const slideParam = new URL(location.href).searchParams.get('slide') || '';
+      runtimeApi?.runtime?.sendMessage({
+        type: 'ultimateMoocs:slidePosition.save',
+        payload: { key, page, slideParam },
+      }).catch(() => {});
+    }
+  }, 1500);
+  return interval;
+}
+
+(async () => {
+  try {
+    const storageApi = runtimeApi?.storage?.local;
+    if (!storageApi) return;
+    const result = await storageApi.get('ultimateMoocs.settings');
+    const settings = result?.['ultimateMoocs.settings'];
+    if (settings?.navigation?.enableSlidePositionRestore === false) return;
+    startSlidePositionTracker();
+  } catch {
+    startSlidePositionTracker();
+  }
+})();
+
 runtimeApi?.runtime?.onMessage?.addListener((message, sender, sendResponse) => {
   if (!message?.type?.startsWith(MESSAGE_PREFIX)) return false;
 

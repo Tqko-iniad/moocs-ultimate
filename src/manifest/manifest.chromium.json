@@ -51,7 +51,8 @@
     },
     {
       "matches": ["https://docs.google.com/presentation/*"],
-      "js": ["slides/index.js"]
+      "js": ["slides/index.js"],
+      "all_frames": true
     },
     {
       "matches": ["https://www.ace.toyo.ac.jp/ct/home*"],

@@ -16,8 +16,11 @@ export const MESSAGE_TYPES = Object.freeze({
   aiUsageGet: 'ultimateMoocs:ai.usage.get',
   aiSummaryList: 'ultimateMoocs:ai.summary.list',
   aiSummaryDelete: 'ultimateMoocs:ai.summary.delete',
+  aiSummaryCheckStale: 'ultimateMoocs:ai.summary.checkStale',
   diagnosticsGet: 'ultimateMoocs:diagnostics.get',
   debugLog: 'ultimateMoocs:debug.log',
+  slidePositionSave: 'ultimateMoocs:slidePosition.save',
+  slidePositionGet: 'ultimateMoocs:slidePosition.get',
 });
 
 export function createMessage(type, payload = {}) {

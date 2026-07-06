@@ -16,6 +16,7 @@ export function createPageMemoPanelController({
 }) {
   let panel = null;
   let memoQueue = Promise.resolve();
+  let searchQuery = '';
 
   function withMemoLock(task) {
     const result = memoQueue.then(task, task);
@@ -52,7 +53,17 @@ export function createPageMemoPanelController({
     const list = panel.querySelector('.um-memo-list');
     list.replaceChildren();
 
-    for (const note of record.notes) {
+    const query = searchQuery.trim().toLowerCase();
+    const visibleNotes = query
+      ? record.notes.filter((note) => String(note.body || '').toLowerCase().includes(query))
+      : record.notes;
+
+    const countLabel = panel.querySelector('.um-memo-search-count');
+    if (countLabel) {
+      countLabel.textContent = query ? `${visibleNotes.length} / ${record.notes.length}件` : '';
+    }
+
+    for (const note of visibleNotes) {
       const item = documentRef.createElement('article');
       item.className = 'um-memo-item';
       item.dataset.memoId = note.id;
@@ -129,6 +140,10 @@ export function createPageMemoPanelController({
           <strong>Memo</strong>
           <div class="um-panel-actions"></div>
         </div>
+        <div class="um-memo-search-row">
+          <input type="search" class="um-memo-search-input" placeholder="メモを検索" />
+          <span class="um-memo-search-count"></span>
+        </div>
         <div class="um-memo-list"></div>
       `;
       const actions = panel.querySelector('.um-panel-actions');
@@ -142,6 +157,13 @@ export function createPageMemoPanelController({
         downloadTextFile('moocs-ultimate-page-memo.json', `${JSON.stringify(record, null, 2)}\n`, 'application/json');
       });
       actions.append(addButton, exportButton);
+
+      const searchInput = panel.querySelector('.um-memo-search-input');
+      searchInput.addEventListener('input', () => {
+        searchQuery = searchInput.value;
+        render().catch((error) => console.warn('[ultimateMoocs:memo] search render failed', error));
+      });
+
       documentRef.body.append(panel);
     }
 

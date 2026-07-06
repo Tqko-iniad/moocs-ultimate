@@ -11,6 +11,7 @@ import {
   getCanonicalMoocsUrl,
   parseMoocsCourseRoute,
 } from '../shared/moocsRoute.js';
+import { buildIcsString, downloadIcsFile } from '../shared/icsExport.js';
 
 function normalizeText(value) {
   return String(value || '')
@@ -107,7 +108,28 @@ export function createAssignmentOverviewPanelController({
     summary.className = 'um-assignment-overview-summary';
     summary.textContent = `${overview.year} / ${overview.lectures.length}回`;
     summary.setAttribute('aria-live', 'polite');
-    header.append(heading, summary);
+    const calendarExportEnabled = Boolean(getCurrentSettings()?.assignments?.enableCalendarExport);
+    if (calendarExportEnabled) {
+      const exportBtn = documentRef.createElement('button');
+      exportBtn.type = 'button';
+      exportBtn.className = 'um-assignment-overview-export';
+      exportBtn.textContent = '📅 書き出し';
+      exportBtn.title = '未提出の課題締切を .ics ファイルとしてダウンロード';
+      exportBtn.addEventListener('click', () => {
+        const ics = buildIcsString(records);
+        if (!ics.includes('BEGIN:VEVENT')) {
+          exportBtn.textContent = '対象なし';
+          setTimeout(() => { exportBtn.textContent = '📅 書き出し'; }, 2000);
+          return;
+        }
+        downloadIcsFile(ics, `moocs-deadlines-${overview.year}.ics`);
+        exportBtn.textContent = '✓ 保存しました';
+        setTimeout(() => { exportBtn.textContent = '📅 書き出し'; }, 2000);
+      });
+      header.append(heading, summary, exportBtn);
+    } else {
+      header.append(heading, summary);
+    }
 
     const list = documentRef.createElement('div');
     list.className = 'um-assignment-overview-list';

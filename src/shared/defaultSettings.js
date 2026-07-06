@@ -17,6 +17,9 @@ export const DEFAULT_SETTINGS = Object.freeze({
   navigation: {
     enableTabColoring: true,
     tabColorMode: 'badge',
+    enableSlidePositionRestore: true,
+    slidePositionMaxEntries: 100,
+    slidePositionStorage: 'session',
     shortcutPrevious: 'Mod+ArrowLeft',
     shortcutNext: 'Mod+ArrowRight',
     colors: {
@@ -55,6 +58,7 @@ export const DEFAULT_SETTINGS = Object.freeze({
     hideCompletedAssignmentLectures: true,
     assignmentOverviewWarningDays: 7,
     assignmentOverviewLimit: 10,
+    enableCalendarExport: true,
   },
   iniadPlus: {
     enableAceTimetableDownload: false,
@@ -138,6 +142,25 @@ export const SETTING_DEFINITIONS = Object.freeze([
       { path: 'navigation.colors.assignment', label: 'Assignment', type: 'color' },
       { path: 'navigation.colors.check', label: 'Check', type: 'color' },
       { path: 'navigation.colors.slide', label: 'Slide', type: 'color' },
+      { path: 'navigation.enableSlidePositionRestore', label: 'Slide position restore', type: 'checkbox' },
+      {
+        path: 'navigation.slidePositionMaxEntries',
+        label: 'Slide position max entries',
+        type: 'number',
+        min: 20,
+        max: 500,
+        step: 10,
+      },
+      {
+        path: 'navigation.slidePositionStorage',
+        label: 'Slide position storage',
+        type: 'select',
+        options: ['session', 'local'],
+        optionLabels: {
+          session: 'セッション (ブラウザを閉じたら消える)',
+          local: '永続 (手動で消すまで残る)',
+        },
+      },
     ],
   },
   {
@@ -217,6 +240,11 @@ export const SETTING_DEFINITIONS = Object.freeze([
         min: 3,
         max: 30,
         step: 1,
+      },
+      {
+        path: 'assignments.enableCalendarExport',
+        label: 'Calendar export',
+        type: 'checkbox',
       },
     ],
   },

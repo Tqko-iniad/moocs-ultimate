@@ -20,8 +20,10 @@ export function createAiSummaryPanelElement(documentRef, handlers = {}) {
     <p class="um-ai-token-indicator" data-state="unknown">「抽出して要約」を押すと、送信前に今回使うtoken数を確認できます</p>
     <div class="um-ai-cache-row" hidden>
       <span class="um-ai-cache-text"></span>
+      <button type="button" data-um-ai="check-stale">更新確認</button>
       <button type="button" data-um-ai="regenerate">再生成</button>
     </div>
+    <p class="um-ai-stale-notice" hidden>⚠ ページ内容が前回の要約作成時から変わっている可能性があります。</p>
     <div class="um-ai-output" hidden></div>
     <div class="um-ai-output-actions" hidden>
       <button type="button" data-um-ai="copy">コピー</button>
@@ -46,7 +48,9 @@ export function setAiSummaryPanelStatus(panel, text, isError = false) {
 export function setAiSummaryBusyState(panel, isBusy) {
   if (!panel) return;
   panel.dataset.umAiBusy = String(isBusy);
-  for (const button of panel.querySelectorAll('[data-um-ai="summarize"], [data-um-ai="regenerate"]')) {
+  for (const button of panel.querySelectorAll(
+    '[data-um-ai="summarize"], [data-um-ai="regenerate"], [data-um-ai="check-stale"]',
+  )) {
     button.disabled = isBusy;
   }
 }
@@ -139,6 +143,7 @@ export function resetAiSummaryPanelForSource(panel, sourceUrl) {
   const outputActions = panel.querySelector('.um-ai-output-actions');
   const cacheRow = panel.querySelector('.um-ai-cache-row');
   const cacheText = panel.querySelector('.um-ai-cache-text');
+  const staleNotice = panel.querySelector('.um-ai-stale-notice');
 
   if (output) {
     output.hidden = true;
@@ -148,7 +153,14 @@ export function resetAiSummaryPanelForSource(panel, sourceUrl) {
   if (outputActions) outputActions.hidden = true;
   if (cacheRow) cacheRow.hidden = true;
   if (cacheText) cacheText.textContent = '';
+  if (staleNotice) staleNotice.hidden = true;
   return true;
+}
+
+export function setAiSummaryStaleState(panel, isStale) {
+  if (!panel) return;
+  const staleNotice = panel.querySelector('.um-ai-stale-notice');
+  if (staleNotice) staleNotice.hidden = !isStale;
 }
 
 function appendInlineMarkdown(parent, text) {

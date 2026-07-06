@@ -347,6 +347,41 @@ async function listSavedAiSummaries(payload = {}) {
   };
 }
 
+async function checkAiSummaryStale(payload = {}) {
+  const settings = await getSettings();
+  const aiSettings = settings.ai || {};
+  const maxInputChars = Math.max(1000, Number(aiSettings.maxInputChars || 24000));
+  const text = extractAiSummaryInputText(payload, maxInputChars);
+  const title = String(payload.title || 'MOOCs slide').trim();
+  const sourceUrl = String(payload.sourceUrl || '').trim();
+
+  // Content identity intentionally excludes model/summaryMode so that
+  // changing an AI setting alone doesn't get reported as "content changed".
+  const contentHash = [
+    hashTextFnv1aHex(sourceUrl || ''),
+    hashTextFnv1aHex(title || ''),
+    hashTextFnv1aHex(text || ''),
+  ].join(':');
+
+  const summaries = await getAiSummaries();
+  const normalizedSourceUrl = normalizeAiSummarySourceUrl(sourceUrl);
+  let hasSummary = false;
+  let contentMatchesLatest = false;
+
+  for (const [cacheKey, item] of Object.entries(summaries)) {
+    if (!item || typeof item !== 'object' || !item.summary) continue;
+    if (!isSameAiSummarySource(item.sourceUrl, normalizedSourceUrl)) continue;
+    hasSummary = true;
+    const keyContentHash = cacheKey.split(':').slice(-3).join(':');
+    if (keyContentHash === contentHash) {
+      contentMatchesLatest = true;
+      break;
+    }
+  }
+
+  return { hasSummary, stale: hasSummary && !contentMatchesLatest };
+}
+
 async function deleteSavedAiSummary(payload = {}) {
   const cacheKey = String(payload.cacheKey || '').trim();
   if (!cacheKey) throw new Error('削除するAI要約が指定されていません。');
@@ -1318,6 +1353,9 @@ async function handleRuntimeMessage(message, sender) {
     case MESSAGE_TYPES.aiSummaryDelete:
       return deleteSavedAiSummary(message.payload);
 
+    case MESSAGE_TYPES.aiSummaryCheckStale:
+      return checkAiSummaryStale(message.payload);
+
     case MESSAGE_TYPES.slidesTextExtract:
     case MESSAGE_TYPES.aiExtractSlidesText:
       return extractGoogleSlidesTextForUrls(message.payload);
@@ -1366,6 +1404,33 @@ async function handleRuntimeMessage(message, sender) {
     case MESSAGE_TYPES.debugLog:
       console.debug('[ultimateMoocs:debug]', message.payload);
       return { logged: true };
+
+    case MESSAGE_TYPES.slidePositionSave: {
+      const { key, page, slideParam } = message.payload || {};
+      if (!key || typeof page !== 'number') return { saved: false };
+      const settings = await getSettings();
+      const storageArea = settings.navigation?.slidePositionStorage === 'local' ? browserApi.storage.local : browserApi.storage.session;
+      const maxEntries = settings.navigation?.slidePositionMaxEntries || 100;
+      const stored = (await storageArea.get('um_slidePositions'))?.um_slidePositions || {};
+      stored[key] = { page, slideParam: slideParam || '', updatedAt: Date.now() };
+      const storedKeys = Object.keys(stored);
+      if (storedKeys.length > maxEntries) {
+        const sorted = storedKeys.sort((a, b) => (stored[a].updatedAt || 0) - (stored[b].updatedAt || 0));
+        const keep = Math.floor(maxEntries * 0.8);
+        for (const old of sorted.slice(0, storedKeys.length - keep)) delete stored[old];
+      }
+      await storageArea.set({ um_slidePositions: stored });
+      return { saved: true };
+    }
+
+    case MESSAGE_TYPES.slidePositionGet: {
+      const { key } = message.payload || {};
+      if (!key) return { position: null };
+      const settings = await getSettings();
+      const storageArea = settings.navigation?.slidePositionStorage === 'local' ? browserApi.storage.local : browserApi.storage.session;
+      const stored = (await storageArea.get('um_slidePositions'))?.um_slidePositions || {};
+      return { position: stored[key] || null };
+    }
 
     default:
       throw new Error(`Unsupported message type: ${message.type}`);
